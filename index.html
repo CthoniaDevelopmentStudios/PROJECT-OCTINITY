@@ -3,16 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OCTINITY v5.0 // Terminal & Hive Console</title>
+    <title>OCTINITY // Autonomous Self-Reprogramming Neural Hive v4.2</title>
     <style>
         :root {
-            --bg-color: #050505;
-            --panel-bg: #0c0c0e;
-            --border-color: #22252a;
+            --bg-color: #030303;
+            --panel-bg: #08080a;
+            --border-glow: #ff2244;
+            --border-dim: #4a0d15;
+            --accent-red: #ff3355;
             --accent-green: #00ff66;
-            --accent-dim: #004d20;
-            --text-main: #c0c5ce;
-            --text-bright: #ffffff;
+            --accent-blue: #00e5ff;
+            --accent-warn: #ffb700;
+            --text-main: #d0d0dc;
+            --text-dim: #606070;
             --font-mono: 'Courier New', Courier, monospace;
         }
 
@@ -30,329 +33,777 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            border: 2px solid var(--border-glow);
+            box-shadow: inset 0 0 25px rgba(255, 34, 68, 0.25), 0 0 20px rgba(255, 34, 68, 0.4);
+            position: relative;
         }
 
         header {
             background-color: var(--panel-bg);
-            border-bottom: 1px solid var(--border-color);
-            padding: 10px 20px;
+            border-bottom: 1px solid var(--border-dim);
+            padding: 12px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-shrink: 0;
         }
 
-        .logo {
-            color: var(--accent-green);
+        .header-title {
+            font-size: 14px;
             font-weight: bold;
-            font-size: 1.1rem;
             letter-spacing: 2px;
-        }
-
-        .controls-top {
+            color: var(--accent-red);
             display: flex;
-            gap: 15px;
             align-items: center;
+            gap: 10px;
+            text-shadow: 0 0 8px rgba(255, 51, 85, 0.6);
         }
 
-        select, button {
-            background: var(--bg-color);
-            color: var(--accent-green);
-            border: 1px solid var(--accent-dim);
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-red);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent-red);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.3; transform: scale(0.8); box-shadow: 0 0 4px var(--accent-red); }
+            50% { opacity: 1; transform: scale(1.3); box-shadow: 0 0 14px var(--accent-red); }
+            100% { opacity: 0.3; transform: scale(0.8); box-shadow: 0 0 4px var(--accent-red); }
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 20px;
+            font-size: 11px;
+            color: var(--text-dim);
+        }
+
+        .stats-bar span {
+            color: var(--text-main);
+        }
+
+        /* Action Toolbar */
+        .toolbar-panel {
+            background-color: #060608;
+            border-bottom: 1px solid var(--border-dim);
+            padding: 10px 20px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-shrink: 0;
+            flex-wrap: wrap;
+        }
+
+        .toolbar-panel label {
+            font-size: 11px;
+            color: var(--accent-warn);
+            letter-spacing: 1px;
+        }
+
+        .toolbar-btn {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-dim);
+            color: var(--text-main);
             padding: 6px 12px;
             font-family: var(--font-mono);
-            font-size: 0.85rem;
+            font-size: 11px;
             cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .toolbar-btn:hover {
+            border-color: var(--accent-red);
+            color: var(--accent-red);
+        }
+
+        .toolbar-btn.active {
+            background: var(--accent-red);
+            color: var(--bg-color);
+            border-color: var(--accent-red);
+        }
+
+        .toolbar-panel select {
+            background: var(--bg-color);
+            border: 1px solid var(--border-dim);
+            color: var(--text-main);
+            padding: 5px 10px;
+            font-family: var(--font-mono);
+            font-size: 11px;
             outline: none;
-            transition: all 0.2s ease;
+            cursor: pointer;
         }
 
-        select:hover, button:hover {
-            border-color: var(--accent-green);
-            box-shadow: 0 0 8px rgba(0, 255, 102, 0.2);
+        .toolbar-panel select:focus {
+            border-color: var(--accent-red);
         }
 
-        main {
+        .main-container {
+            display: grid;
+            grid-template-columns: 3fr 2fr;
             flex: 1;
-            display: flex;
-            flex-direction: column;
-            padding: 15px;
-            gap: 15px;
-            max-width: 1400px;
-            width: 100%;
-            margin: 0 auto;
-        }
-
-        .terminal-container {
-            flex: 1;
-            background-color: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            display: flex;
-            flex-direction: column;
+            min-height: 0;
             overflow: hidden;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+            border-bottom: 1px solid var(--border-dim);
         }
 
-        .terminal-output {
+        .terminal-panel {
+            display: flex;
+            flex-direction: column;
+            background-color: var(--bg-color);
+            border-right: 1px solid var(--border-dim);
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        .terminal-logs {
             flex: 1;
+            min-height: 0;
             padding: 15px;
             overflow-y: auto;
+            font-size: 12px;
+            line-height: 1.5;
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            font-size: 0.9rem;
-            line-height: 1.4;
+            gap: 6px;
         }
 
         .log-entry {
+            border-left: 2px solid var(--border-dim);
+            padding-left: 8px;
+            word-break: break-all;
+            white-space: pre-wrap;
+        }
+
+        .log-sys { border-color: var(--accent-blue); color: var(--accent-blue); }
+        .log-mutation { border-color: var(--accent-warn); color: var(--accent-warn); }
+        .log-success { border-color: var(--accent-green); color: var(--accent-green); }
+        .log-error { border-color: var(--accent-red); color: var(--accent-red); }
+        .log-user { border-color: #ffffff; color: #ffffff; font-weight: bold; }
+
+        .control-strip {
+            padding: 8px 15px;
+            background: rgba(255, 34, 68, 0.05);
+            border-top: 1px solid var(--border-dim);
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .control-strip span {
+            font-size: 10px;
+            color: var(--text-dim);
+            letter-spacing: 1px;
+        }
+
+        .btn-action {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-dim);
+            padding: 5px 12px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .btn-reward { color: var(--accent-green); border-color: #005522; }
+        .btn-reward:hover { background: var(--accent-green); color: var(--bg-color); box-shadow: 0 0 8px var(--accent-green); }
+
+        .btn-punish { color: var(--accent-red); border-color: #551122; }
+        .btn-punish:hover { background: var(--accent-red); color: var(--bg-color); box-shadow: 0 0 8px var(--accent-red); }
+
+        .chat-input-area {
+            padding: 12px;
+            background-color: var(--panel-bg);
+            border-top: 1px solid var(--border-dim);
+            display: flex;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .chat-input-area input {
+            flex: 1;
+            background: var(--bg-color);
+            border: 1px solid var(--border-dim);
+            color: var(--text-main);
+            padding: 10px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            outline: none;
+            border-radius: 2px;
+        }
+
+        .chat-input-area input:focus {
+            border-color: var(--accent-red);
+            box-shadow: 0 0 6px rgba(255, 34, 68, 0.4);
+        }
+
+        .chat-input-area button {
+            background: var(--panel-bg);
+            border: 1px solid var(--accent-red);
+            color: var(--accent-red);
+            padding: 0 20px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .chat-input-area button:hover {
+            background: var(--accent-red);
+            color: var(--bg-color);
+            box-shadow: 0 0 10px var(--accent-red);
+        }
+
+        .inspector-panel {
+            background-color: var(--panel-bg);
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        .inspector-header {
+            padding: 10px 15px;
+            font-size: 11px;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+            border-bottom: 1px solid var(--border-dim);
+            background: rgba(0,0,0,0.3);
+            flex-shrink: 0;
+        }
+
+        .code-inspector {
+            flex: 1;
+            min-height: 0;
+            padding: 15px;
+            font-size: 11px;
+            line-height: 1.4;
+            overflow-y: auto;
+            color: var(--accent-green);
+            background: rgba(0,0,0,0.5);
+            white-space: pre-wrap;
+            border-bottom: 1px solid var(--border-dim);
             word-break: break-all;
         }
 
-        .log-system { color: #666; }
-        .log-user { color: var(--text-bright); }
-        .log-octinity { color: var(--accent-green); }
-        .log-error { color: #ff3333; }
-
-        .terminal-input-bar {
-            display: flex;
-            background-color: var(--bg-color);
-            border-top: 1px solid var(--border-color);
+        .hive-grid {
+            height: 130px;
+            flex-shrink: 0;
             padding: 10px;
-            gap: 10px;
-        }
-
-        .prompt-symbol {
-            color: var(--accent-green);
-            display: flex;
-            align-items: center;
-            font-weight: bold;
-        }
-
-        input[type="text"] {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: var(--text-bright);
-            font-family: var(--font-mono);
-            font-size: 0.95rem;
-            outline: none;
-        }
-
-        /* Modal styling */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.85);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s ease;
-        }
-
-        .modal-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .modal-content {
-            background: var(--panel-bg);
-            border: 1px solid var(--accent-green);
-            width: 600px;
-            max-width: 90%;
-            padding: 25px;
-            box-shadow: 0 0 25px rgba(0,255,102,0.15);
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
-            color: var(--accent-green);
-            font-weight: bold;
-        }
-
-        .modal-body {
-            font-size: 0.85rem;
-            line-height: 1.6;
-            max-height: 350px;
+            display: grid;
+            grid-template-columns: repeat(20, 1fr);
+            gap: 3px;
+            background: var(--bg-color);
             overflow-y: auto;
         }
 
-        .modal-body ul {
-            padding-left: 20px;
+        .hive-node {
+            background-color: var(--border-dim);
+            border-radius: 1px;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .hive-node:hover {
+            transform: scale(1.3);
+            border-color: var(--accent-red);
+        }
+
+        .hive-node.active {
+            background-color: var(--accent-blue);
+            box-shadow: 0 0 5px var(--accent-blue);
+        }
+
+        .hive-node.elite {
+            background-color: var(--accent-red);
+            box-shadow: 0 0 8px var(--accent-red);
+        }
+
+        /* Popup Modal Window for Commands List */
+        .modal-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal-box {
+            width: 720px;
+            height: 480px;
+            background: var(--panel-bg);
+            border: 2px solid var(--accent-red);
+            box-shadow: 0 0 20px rgba(255, 51, 85, 0.4);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            padding: 10px 15px;
+            background: rgba(255, 51, 85, 0.1);
+            border-bottom: 1px solid var(--border-dim);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--accent-red);
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .modal-close-btn {
+            background: none;
+            border: none;
+            color: var(--accent-red);
+            cursor: pointer;
+            font-family: var(--font-mono);
+            font-weight: bold;
+        }
+
+        .modal-content {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            font-size: 11px;
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        .cmd-table {
+            width: 100%;
+            border-collapse: collapse;
             margin-top: 10px;
         }
 
-        .modal-body li {
-            margin-bottom: 6px;
+        .cmd-table th, .cmd-table td {
+            border: 1px solid var(--border-dim);
+            padding: 8px 10px;
+            text-align: left;
         }
 
-        .close-modal {
-            background: none;
-            border: none;
-            color: var(--text-main);
-            cursor: pointer;
-            font-size: 1rem;
+        .cmd-table th {
+            color: var(--accent-warn);
+            background: rgba(255, 183, 0, 0.05);
         }
-        .close-modal:hover {
-            color: var(--text-bright);
-            box-shadow: none;
+
+        .cmd-table code {
+            color: var(--accent-blue);
         }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="logo">OCTINITY // v5.0</div>
-        <div class="controls-top">
-            <select id="submoduleSelect">
-                <option value="SYNAPSE_CORE">SUBMODULE: SYNAPSE_CORE</option>
-                <option value="SCRAPER_PROXY">SUBMODULE: SCRAPER_PROXY</option>
-                <option value="REWARD_ENGINE">SUBMODULE: REWARD_ENGINE</option>
-                <option value="SPEECH_SYNTH">SUBMODULE: SPEECH_SYNTH</option>
-            </select>
-            <button id="toggleModuleLock">MODULE LOCK: OFF</button>
-            <button id="openCommandsBtn">[ /COMMANDS & FEATURES ]</button>
+        <div class="header-title">
+            <div class="pulse-dot"></div>
+            OCTINITY // AUTONOMOUS HIVE v4.2 (COMMANDS, MODULE LOCK & SPEECH)
+        </div>
+        <div class="stats-bar">
+            <div>NODES: <span id="stat-nodes">10,000</span></div>
+            <div>GEN: <span id="stat-gen">0</span></div>
+            <div>ACTIVE SUBMODULE: <span id="stat-mod-name" style="color: var(--accent-blue);">SYNAPSE_CORE</span></div>
+            <div>STATUS: <span id="stat-status">ACTIVE</span></div>
         </div>
     </header>
 
-    <main>
-        <div class="terminal-container">
-            <div class="terminal-output" id="terminalOutput">
-                <div class="log-entry log-system">[SYS] Initializing Octinity Core v5.0 environment...</div>
-                <div class="log-entry log-system">[SYS] 10,000 nodes synchronized. Active module: SYNAPSE_CORE.</div>
-                <div class="log-entry log-octinity">[OCTINITY] Ready. Type /help for available commands or use /talk [message] to engage synthesis.</div>
+    <div class="toolbar-panel">
+        <button class="toolbar-btn" id="toggle-list-btn">[ /COMMANDS LIST ]</button>
+        
+        <button class="toolbar-btn" id="module-select-btn" title="Lock chat input strictly to selected target module">MODULE LOCK: OFF</button>
+        
+        <button class="toolbar-btn" id="pause-btn">PAUSE HIVE</button>
+
+        <label>TARGET MODULE:</label>
+        <select id="module-dropdown">
+            <option value="SYNAPSE_CORE">Module 01: Synapse Core & Weight Matrix</option>
+            <option value="SCRAPER_PROXY">Module 02: Open-Source Net Scraper</option>
+            <option value="REWARD_ENGINE">Module 03: Reinforcement Learning Loop</option>
+            <option value="SPEECH_SYNTH">Module 04: Vocal Synthesizer & TTS Engine</option>
+        </select>
+
+        <button class="toolbar-btn" id="speech-toggle-btn" style="color: var(--accent-green); border-color: #005522;">SPEECH: ON</button>
+    </div>
+
+    <div class="main-container">
+        <div class="terminal-panel">
+            <div class="terminal-logs" id="terminal-logs">
+                <div class="log-entry log-sys">[SYSTEM] Octinity v4.2 online. Type `/help` or click `[ /COMMANDS LIST ]` to open command reference.</div>
+                <div class="log-entry log-sys">[GLASS-BOX] 10,000 subroutines running. Text interpretation parser active.</div>
             </div>
-            <div class="terminal-input-bar">
-                <span class="prompt-symbol">&gt;</span>
-                <input type="text" id="commandInput" placeholder="Type a command or chat with Octinity..." autofocus autocomplete="off">
-                <button id="sendBtn">EXECUTE</button>
+            
+            <div class="control-strip">
+                <span>MANUAL OVERRIDE:</span>
+                <button class="btn-action btn-reward" id="reward-btn">+ REWARD ELITE</button>
+                <button class="btn-action btn-punish" id="punish-btn">- PUNISH ELITE</button>
+            </div>
+
+            <div class="chat-input-area">
+                <input type="text" id="user-input" placeholder="Type message or /command (e.g., /help, /status, /talk [msg])..." />
+                <button id="send-btn">SEND</button>
             </div>
         </div>
-    </main>
 
-    <!-- Command Guide Modal -->
-    <div class="modal-overlay" id="modalOverlay">
-        <div class="modal-content">
-            <div class="modal-header">
-                <span>SYSTEM REFERENCE // COMMANDS & FEATURES</span>
-                <button class="close-modal" id="closeModalBtn">[X]</button>
+        <div class="inspector-panel">
+            <div class="inspector-header">LOCKED SUBMODULE INSPECT // ELITE NODE CODE MATRICE</div>
+            <div class="code-inspector" id="code-inspector">
+// Awaiting initial heartbeat cycle...
             </div>
-            <div class="modal-body">
-                <p>Welcome to Octinity v5.0. This environment provides modular subcore simulation and terminal access.</p>
-                <ul>
-                    <li><strong>/help</strong> : Lists all available command protocols in the terminal log.</li>
-                    <li><strong>/talk [message]</strong> : Sends a cognitive query directly through the active submodule and triggers speech synthesis output.</li>
-                    <li><strong>/clear</strong> : Purges current terminal scroll buffer.</li>
-                    <li><strong>/status</strong> : Displays current node allocation, latency, and memory footprint metrics.</li>
-                    <li><strong>Module Lock</strong> : Toggle button to route all terminal input directly into the selected submodule pipeline.</li>
-                </ul>
+            <div class="inspector-header">HIVE MATRIX TOPOLOGY (10,000 NODES)</div>
+            <div class="hive-grid" id="hive-grid"></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="list-modal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <span>OCTINITY // COMMAND REFERENCE & FEATURE GUIDE</span>
+                <button class="modal-close-btn" id="modal-close-x">[X]</button>
+            </div>
+            <div class="modal-content">
+                <p>You can execute these commands directly in the terminal chat box or use the toolbar buttons above.</p>
+                <table class="cmd-table">
+                    <thead>
+                        <tr>
+                            <th>Command</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>/help</code></td>
+                            <td>Prints the full command reference list to the terminal log.</td>
+                        </tr>
+                        <tr>
+                            <td><code>/status</code></td>
+                            <td>Displays current generation, active submodule, and elite node fitness score.</td>
+                        </tr>
+                        <tr>
+                            <td><code>/talk [message]</code></td>
+                            <td>Forces the active module to interpret your text input and vocalize speech output.</td>
+                        </tr>
+                        <tr>
+                            <td><code>/select [mod_name]</code></td>
+                            <td>Switches active target module (SYNAPSE_CORE, SCRAPER_PROXY, REWARD_ENGINE, SPEECH_SYNTH).</td>
+                        </tr>
+                        <tr>
+                            <td><code>/pause</code> / <code>/resume</code></td>
+                            <td>Toggles the evolutionary heartbeat loop.</td>
+                        </tr>
+                        <tr>
+                            <td><code>/clear</code></td>
+                            <td>Clears the terminal history log buffer.</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <br>
+                <p style="color: var(--accent-warn);">💡 <strong>Tip:</strong> Engage <strong>MODULE LOCK</strong> to route your text chat exclusively into your chosen module so it learns and responds contextually with speech synthesis!</p>
             </div>
         </div>
     </div>
 
     <script>
-        const terminalOutput = document.getElementById('terminalOutput');
-        const commandInput = document.getElementById('commandInput');
-        const sendBtn = document.getElementById('sendBtn');
-        const submoduleSelect = document.getElementById('submoduleSelect');
-        const toggleModuleLock = document.getElementById('toggleModuleLock');
-        const openCommandsBtn = document.getElementById('openCommandsBtn');
-        const modalOverlay = document.getElementById('modalOverlay');
-        const closeModalBtn = document.getElementById('closeModalBtn');
-
+        const TOTAL_NODES = 10000;
+        const HIVE_DISPLAY_COUNT = 100;
+        let generation = 0;
+        let webCacheSize = 128;
+        let isPaused = false;
+        let speechEnabled = true;
         let moduleLocked = false;
+        let activeSubmodule = "SYNAPSE_CORE";
 
-        // Modal triggers
-        openCommandsBtn.addEventListener('click', () => modalOverlay.classList.add('active'));
-        closeModalBtn.addEventListener('click', () => modalOverlay.classList.remove('active'));
-        modalOverlay.addEventListener('click', (e) => {
-            if (e.target === modalOverlay) modalOverlay.classList.remove('active');
-        });
+        const webCorpusFragments = [
+            "function computeLoss(pred, target) { return Math.pow(pred - target, 2); }",
+            "const mutateWeights = (arr) => arr.map(w => w + (Math.random() - 0.5) * 0.2);",
+            "async function fetchDictionaryToken(word) { return await globalStore.lookup(word); }",
+            "let sorted = input.sort((a, b) => a - b); // Optimized via Octinity registry",
+            "class OctinityEngine { evaluate() { return this.compileSafely(); } }"
+        ];
 
-        // Module Lock toggle
-        toggleModuleLock.addEventListener('click', () => {
-            moduleLocked = !moduleLocked;
-            toggleModuleLock.textContent = `MODULE LOCK: ${moduleLocked ? 'ON' : 'OFF'}`;
-            toggleModuleLock.style.borderColor = moduleLocked ? 'var(--accent-green)' : 'var(--accent-dim)';
-            appendLog(`[SYS] Module lock is now ${moduleLocked ? 'ENGAGED' : 'DISENGAGED'}.`, 'log-system');
-        });
+        let nodes = Array.from({ length: TOTAL_NODES }, (_, i) => ({
+            id: i,
+            fitness: Math.random() * 0.1,
+            code: `// Octinity Genome Node #${i}\nfunction executeTask(input) {\n    let weights = [${Math.random().toFixed(3)}, ${Math.random().toFixed(3)}];\n    return input * weights[0] + Math.sin(weights[1]);\n}`,
+            memoryLog: "Initialized baseline sandbox stub."
+        }));
 
-        function appendLog(text, className = 'log-user') {
-            const div = document.createElement('div');
-            div.className = `log-entry ${className}`;
-            div.textContent = text;
-            terminalOutput.appendChild(div);
-            terminalOutput.scrollTop = terminalOutput.scrollHeight;
+        let eliteNode = nodes[0];
+
+        const hiveGrid = document.getElementById('hive-grid');
+        const gridNodes = [];
+        for (let i = 0; i < HIVE_DISPLAY_COUNT; i++) {
+            const nodeDiv = document.createElement('div');
+            nodeDiv.className = 'hive-node';
+            nodeDiv.title = `Octinity Node Sample #${i * 100}`;
+            nodeDiv.onclick = () => inspectNode(i * 100);
+            hiveGrid.appendChild(nodeDiv);
+            gridNodes.push(nodeDiv);
         }
 
+        function logToTerminal(text, type = 'sys') {
+            const logs = document.getElementById('terminal-logs');
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            const timestamp = new Date().toISOString().substr(11, 8);
+            entry.textContent = `[${timestamp}] ${text}`;
+            logs.appendChild(entry);
+            logs.scrollTop = logs.scrollHeight;
+        }
+
+        // Text-to-Speech Output Function
         function speakText(text) {
-            if ('speechSynthesis' in window) {
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.rate = 1.0;
-                utterance.pitch = 0.9;
-                window.speechSynthesis.speak(utterance);
-            }
+            if (!speechEnabled || !('speechSynthesis' in window)) return;
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 1.0;
+            utterance.pitch = 0.9;
+            window.speechSynthesis.speak(utterance);
         }
 
-        function processCommand(input) {
-            const trimmed = input.trim();
-            if (!trimmed) return;
+        // Button 1: Toggle Command List Modal (Opens/Closes with same button)
+        const listModal = document.getElementById('list-modal');
+        const toggleListBtn = document.getElementById('toggle-list-btn');
+        const modalCloseX = document.getElementById('modal-close-x');
 
-            appendLog(`> ${trimmed}`, 'log-user');
-            commandInput.value = '';
-
-            const parts = trimmed.split(' ');
-            const cmd = parts[0].toLowerCase();
-            const args = parts.slice(1).join(' ');
-
-            if (cmd === '/help') {
-                appendLog('[OCTINITY] Available commands: /help, /clear, /status, /talk [message]', 'log-octinity');
-            } else if (cmd === '/clear') {
-                terminalOutput.innerHTML = '';
-            } else if (cmd === '/status') {
-                appendLog(`[SYS] Node count: 10,000 | Active Submodule: ${submoduleSelect.value} | Memory: 41.2% | Latency: 12ms`, 'log-system');
-            } else if (cmd === '/talk') {
-                handleTalk(args);
+        function toggleListWindow() {
+            const isOpen = listModal.classList.toggle('open');
+            if (isOpen) {
+                toggleListBtn.classList.add('active');
+                toggleListBtn.textContent = "[ CLOSE WINDOW ]";
             } else {
-                if (moduleLocked) {
-                    handleTalk(trimmed);
-                } else {
-                    appendLog(`[ERROR] Unrecognized command or syntax: ${cmd}. Type /help for assistance.`, 'log-error');
-                }
+                toggleListBtn.classList.remove('active');
+                toggleListBtn.textContent = "[ /COMMANDS LIST ]";
             }
         }
 
-        function handleTalk(message) {
-            if (!message) {
-                appendLog('[ERROR] /talk requires a message payload.', 'log-error');
+        toggleListBtn.onclick = toggleListWindow;
+        modalCloseX.onclick = toggleListWindow;
+
+        // Submodule Dropdown Selection Handler
+        const moduleDropdown = document.getElementById('module-dropdown');
+        moduleDropdown.onchange = (e) => {
+            activeSubmodule = e.target.value;
+            document.getElementById('stat-mod-name').textContent = activeSubmodule;
+            logToTerminal(`[MODULE] Target submodule switched to: ${activeSubmodule}`, 'sys');
+            inspectNode(0);
+        };
+
+        // Button 2: Module Lock Mode Feature Toggle
+        const moduleSelectBtn = document.getElementById('module-select-btn');
+        moduleSelectBtn.onclick = () => {
+            moduleLocked = !moduleLocked;
+            if (moduleLocked) {
+                moduleSelectBtn.classList.add('active');
+                moduleSelectBtn.textContent = `MODULE LOCK: ON (${activeSubmodule})`;
+                logToTerminal(`[MODULE LOCK] Engaged. Chat input is now strictly bound to ${activeSubmodule}.`, 'success');
+                speakText(`Module lock engaged on ${activeSubmodule}`);
+            } else {
+                moduleSelectBtn.classList.remove('active');
+                moduleSelectBtn.textContent = "MODULE LOCK: OFF";
+                logToTerminal(`[MODULE LOCK] Disengaged.`, 'sys');
+                speakText("Module lock disengaged.");
+            }
+        };
+
+        // Button 3: Pause / Resume Heartbeat
+        const pauseBtn = document.getElementById('pause-btn');
+        pauseBtn.onclick = () => {
+            isPaused = !isPaused;
+            if (isPaused) {
+                pauseBtn.classList.add('active');
+                pauseBtn.textContent = "RESUME HIVE";
+                document.getElementById('stat-status').textContent = "PAUSED";
+                logToTerminal(`[SYSTEM] Evolution heartbeat suspended.`, 'error');
+                speakText("Hive paused.");
+            } else {
+                pauseBtn.classList.remove('active');
+                pauseBtn.textContent = "PAUSE HIVE";
+                document.getElementById('stat-status').textContent = "ACTIVE";
+                logToTerminal(`[SYSTEM] Evolution heartbeat resumed.`, 'sys');
+                speakText("Hive resumed.");
+            }
+        };
+
+        // Speech Toggle Button
+        const speechToggleBtn = document.getElementById('speech-toggle-btn');
+        speechToggleBtn.onclick = () => {
+            speechEnabled = !speechEnabled;
+            if (speechEnabled) {
+                speechToggleBtn.textContent = "SPEECH: ON";
+                speechToggleBtn.style.color = "var(--accent-green)";
+                speechToggleBtn.style.borderColor = "#005522";
+            } else {
+                speechToggleBtn.textContent = "SPEECH: OFF";
+                speechToggleBtn.style.color = "var(--accent-red)";
+                speechToggleBtn.style.borderColor = "#551122";
+            }
+        };
+
+        function inspectNode(index) {
+            const target = nodes[index];
+            document.getElementById('code-inspector').textContent = `// ACTIVE MODULE: ${activeSubmodule} // NODE ID: ${target.id} // FITNESS: ${target.fitness.toFixed(4)}\n\n${target.code}\n\n// MEMORY: ${target.memoryLog}`;
+        }
+
+        document.getElementById('reward-btn').onclick = () => {
+            eliteNode.fitness += 1.5;
+            eliteNode.code += `\n    // [REWARDED] Submodule ${activeSubmodule} weight reinforced.`;
+            logToTerminal(`[REWARD] Boosted elite node #${eliteNode.id} in ${activeSubmodule}. Fitness: ${eliteNode.fitness.toFixed(4)}.`, 'success');
+            speakText(`Rewarded elite node in ${activeSubmodule}`);
+            updateUI();
+        };
+
+        document.getElementById('punish-btn').onclick = () => {
+            eliteNode.fitness = Math.max(0, eliteNode.fitness - 1.2);
+            eliteNode.code += `\n    // [PUNISHED] Submodule branch pruned.`;
+            logToTerminal(`[PUNISH] Penalized elite node #${eliteNode.id} in ${activeSubmodule}. Fitness: ${eliteNode.fitness.toFixed(4)}.`, 'error');
+            speakText(`Punished elite node in ${activeSubmodule}`);
+            updateUI();
+        };
+
+        function heartbeat() {
+            if (isPaused) return;
+
+            generation++;
+            webCacheSize += Math.floor(Math.random() * 8) + 1;
+
+            nodes.forEach(node => {
+                if (Math.random() < 0.45) {
+                    const snippet = webCorpusFragments[Math.floor(Math.random() * webCorpusFragments.length)];
+                    node.code = node.code + "\n    " + snippet;
+                    node.memoryLog = `Scraped web registry for ${activeSubmodule}.`;
+                }
+
+                const fitnessDelta = (Math.random() - 0.47) * 0.18;
+                node.fitness = Math.max(0, node.fitness + fitnessDelta);
+            });
+
+            nodes.sort((a, b) => b.fitness - a.fitness);
+            eliteNode = nodes[0];
+
+            updateUI();
+        }
+
+        function updateUI() {
+            document.getElementById('stat-gen').textContent = generation;
+
+            gridNodes.forEach((div, idx) => {
+                const actualIndex = idx * 100;
+                div.className = 'hive-node';
+                if (actualIndex === 0) div.classList.add('elite');
+                else if (nodes[actualIndex].fitness > 1.5) div.classList.add('active');
+            });
+
+            document.getElementById('code-inspector').textContent = `// ACTIVE MODULE: ${activeSubmodule} // ELITE ID: ${eliteNode.id} // GEN: ${generation} // FITNESS: ${eliteNode.fitness.toFixed(4)}\n\n${eliteNode.code}\n\n// COGNITION STATUS: Active learning loop online.`;
+        }
+
+        setInterval(heartbeat, 2000);
+
+        // Terminal Message & Command Handler
+        document.getElementById('send-btn').onclick = handleUserMessage;
+        document.getElementById('user-input').onkeypress = (e) => {
+            if (e.key === 'Enter') handleUserMessage();
+        };
+
+        function handleUserMessage() {
+            const inputField = document.getElementById('user-input');
+            const text = inputField.value.trim();
+            if (!text) return;
+
+            logToTerminal(`USER -> [${activeSubmodule}]: "${text}"`, 'user');
+            inputField.value = '';
+
+            // Handle Slash Commands
+            if (text.startsWith('/')) {
+                const parts = text.split(' ');
+                const cmd = parts[0].toLowerCase();
+                const arg = parts.slice(1).join(' ');
+
+                switch(cmd) {
+                    case '/help':
+                        logToTerminal(`[COMMAND LIST] Available commands: /help, /status, /talk [msg], /select [mod], /pause, /resume, /clear`, 'sys');
+                        speakText("Command list printed to terminal.");
+                        break;
+                    case '/status':
+                        logToTerminal(`[STATUS] Gen: ${generation} | Module: ${activeSubmodule} | Elite Fitness: ${eliteNode.fitness.toFixed(4)} | Nodes: 10,000`, 'sys');
+                        speakText(`Generation ${generation}. Elite fitness is ${eliteNode.fitness.toFixed(2)}.`);
+                        break;
+                    case '/talk':
+                        triggerCognitiveResponse(arg || "Hello developer.");
+                        break;
+                    case '/select':
+                        if (arg && ['SYNAPSE_CORE', 'SCRAPER_PROXY', 'REWARD_ENGINE', 'SPEECH_SYNTH'].includes(arg.toUpperCase())) {
+                            activeSubmodule = arg.toUpperCase();
+                            moduleDropdown.value = activeSubmodule;
+                            document.getElementById('stat-mod-name').textContent = activeSubmodule;
+                            logToTerminal(`[COMMAND] Target submodule changed to ${activeSubmodule}`, 'success');
+                            speakText(`Switched to ${activeSubmodule}`);
+                        } else {
+                            logToTerminal(`[ERROR] Invalid module. Choose from SYNAPSE_CORE, SCRAPER_PROXY, REWARD_ENGINE, SPEECH_SYNTH`, 'error');
+                        }
+                        break;
+                    case '/pause':
+                        isPaused = true;
+                        pauseBtn.classList.add('active');
+                        pauseBtn.textContent = "RESUME HIVE";
+                        document.getElementById('stat-status').textContent = "PAUSED";
+                        logToTerminal(`[COMMAND] Hive paused.`, 'sys');
+                        break;
+                    case '/resume':
+                        isPaused = false;
+                        pauseBtn.classList.remove('active');
+                        pauseBtn.textContent = "PAUSE HIVE";
+                        document.getElementById('stat-status').textContent = "ACTIVE";
+                        logToTerminal(`[COMMAND] Hive resumed.`, 'sys');
+                        break;
+                    case '/clear':
+                        document.getElementById('terminal-logs').innerHTML = '';
+                        break;
+                    default:
+                        logToTerminal(`[ERROR] Unknown command "${cmd}". Type /help for assistance.`, 'error');
+                        speakText("Unknown command.");
+                }
                 return;
             }
-            const activeSub = submoduleSelect.value;
-            appendLog(`[${activeSub}] Processing cognitive stream...`, 'log-system');
 
-            setTimeout(() => {
-                const response = `[OCTINITY // ${activeSub}] Echo response confirmed for: "${message}". Neural weights successfully adjusted.`;
-                appendLog(response, 'log-octinity');
-                speakText(message);
-            }, 400);
+            // Normal text chat routing
+            triggerCognitiveResponse(text);
         }
 
-        sendBtn.addEventListener('click', () => processCommand(commandInput.value));
-        commandInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') processCommand(commandInput.value);
-        });
+        function triggerCognitiveResponse(promptText) {
+            setTimeout(() => {
+                let responseText = "";
+                if (activeSubmodule === "SYNAPSE_CORE") {
+                    responseText = `[SYNAPSE_CORE #${eliteNode.id}] Interpreted query: "${promptText}". Weight matrix adjusted successfully.`;
+                } else if (activeSubmodule === "SCRAPER_PROXY") {
+                    responseText = `[SCRAPER_PROXY #${eliteNode.id}] Queried global dictionary for "${promptText}". Tokens ingested into memory.`;
+                } else if (activeSubmodule === "REWARD_ENGINE") {
+                    responseText = `[REWARD_ENGINE #${eliteNode.id}] Evaluated gradient loss for query. Optimization vector applied.`;
+                } else if (activeSubmodule === "SPEECH_SYNTH") {
+                    responseText = `[SPEECH_SYNTH #${eliteNode.id}] Vocal pipeline activated for utterance: "${promptText}".`;
+                }
+
+                logToTerminal(responseText, 'success');
+                speakText(responseText);
+
+                // Self-coding feedback loop updating code matrix
+                eliteNode.code += `\n    // [INTERPRETATION] Processed: "${promptText}"`;
+                updateUI();
+            }, 500);
+        }
+
+        inspectNode(0);
     </script>
 </body>
 </html>
