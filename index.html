@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OCTINITY // Autonomous Self-Reprogramming Neural Hive</title>
+    <title>OCTINITY // Autonomous Self-Reprogramming Neural Hive v4.0</title>
     <style>
         :root {
             --bg-color: #030303;
@@ -35,6 +35,7 @@
             overflow: hidden;
             border: 2px solid var(--border-glow);
             box-shadow: inset 0 0 25px rgba(255, 34, 68, 0.25), 0 0 20px rgba(255, 34, 68, 0.4);
+            position: relative;
         }
 
         header {
@@ -84,23 +85,48 @@
             color: var(--text-main);
         }
 
-        .task-control-panel {
+        /* Action Toolbar: List Toggle, Module Selection, Pause, Module Dropdown, Audio Toggle */
+        .toolbar-panel {
             background-color: #060608;
             border-bottom: 1px solid var(--border-dim);
             padding: 10px 20px;
             display: flex;
-            gap: 15px;
+            gap: 12px;
             align-items: center;
             flex-shrink: 0;
+            flex-wrap: wrap;
         }
 
-        .task-control-panel label {
+        .toolbar-panel label {
             font-size: 11px;
             color: var(--accent-warn);
             letter-spacing: 1px;
         }
 
-        .task-control-panel select {
+        .toolbar-btn {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-dim);
+            color: var(--text-main);
+            padding: 6px 12px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .toolbar-btn:hover {
+            border-color: var(--accent-red);
+            color: var(--accent-red);
+        }
+
+        .toolbar-btn.active {
+            background: var(--accent-red);
+            color: var(--bg-color);
+            border-color: var(--accent-red);
+        }
+
+        .toolbar-panel select {
             background: var(--bg-color);
             border: 1px solid var(--border-dim);
             color: var(--text-main);
@@ -111,16 +137,8 @@
             cursor: pointer;
         }
 
-        .task-control-panel select:focus {
+        .toolbar-panel select:focus {
             border-color: var(--accent-red);
-        }
-
-        .task-badge {
-            font-size: 11px;
-            padding: 3px 8px;
-            background: rgba(255, 183, 0, 0.1);
-            border: 1px solid var(--accent-warn);
-            color: var(--accent-warn);
         }
 
         .main-container {
@@ -306,6 +324,70 @@
             background-color: var(--accent-red);
             box-shadow: 0 0 8px var(--accent-red);
         }
+
+        /* Popup Modal Window for Errors & Assistance Logs */
+        .modal-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal-box {
+            width: 700px;
+            height: 450px;
+            background: var(--panel-bg);
+            border: 2px solid var(--accent-red);
+            box-shadow: 0 0 20px rgba(255, 51, 85, 0.4);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            padding: 10px 15px;
+            background: rgba(255, 51, 85, 0.1);
+            border-bottom: 1px solid var(--border-dim);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--accent-red);
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .modal-close-btn {
+            background: none;
+            border: none;
+            color: var(--accent-red);
+            cursor: pointer;
+            font-family: var(--font-mono);
+            font-weight: bold;
+        }
+
+        .modal-content {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            font-size: 11px;
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .error-item {
+            padding: 8px;
+            background: rgba(255, 51, 85, 0.05);
+            border-left: 3px solid var(--accent-red);
+            color: #ff88a0;
+        }
     </style>
 </head>
 <body>
@@ -313,54 +395,72 @@
     <header>
         <div class="header-title">
             <div class="pulse-dot"></div>
-            OCTINITY // GLASS-BOX NEURAL HIVE v3.1
+            OCTINITY // AUTONOMOUS HIVE v4.0 (SPEECH & ERROR MONITOR)
         </div>
         <div class="stats-bar">
             <div>NODES: <span id="stat-nodes">10,000</span></div>
             <div>GENERATION: <span id="stat-gen">0</span></div>
             <div>BEST FITNESS: <span id="stat-fitness">0.00</span></div>
-            <div>NET SCRAPE BUFFER: <span id="stat-cache">128 KB</span></div>
+            <div>STATUS: <span id="stat-status">ACTIVE</span></div>
         </div>
     </header>
 
-    <div class="task-control-panel">
-        <label>ACTIVE OBJECTIVE TASK:</label>
-        <select id="task-selector">
-            <option value="OPTIMIZE_SORT">Task 01: Optimize O(N log N) Sorting Algorithm</option>
-            <option value="NEURAL_WEIGHTS">Task 02: Minimize Backprop Gradient Loss</option>
-            <option value="VOCAB_PARSER">Task 03: Ingest Open-Source Dictionary & Tokenize</option>
-            <option value="SELF_REPLICATION">Task 04: Generate Stable Autonomous Code Mutator</option>
+    <div class="toolbar-panel">
+        <button class="toolbar-btn" id="toggle-list-btn">[ LIST WINDOW ]</button>
+        
+        <button class="toolbar-btn" id="module-select-btn" title="Highlight & select active module subset">MODULE SELECT</button>
+        
+        <button class="toolbar-btn" id="pause-btn">PAUSE HIVE</button>
+
+        <label>TARGET MODULE:</label>
+        <select id="module-dropdown">
+            <option value="SYNAPSE_CORE">Module 01: Synapse Core & Weight Matrix</option>
+            <option value="SCRAPER_PROXY">Module 02: Open-Source Net Scraper</option>
+            <option value="REWARD_ENGINE">Module 03: Reinforcement Learning Loop</option>
+            <option value="SPEECH_SYNTH">Module 04: Vocal Synthesizer & TTS Engine</option>
         </select>
-        <div class="task-badge" id="task-status-badge">RUNNING</div>
+
+        <button class="toolbar-btn" id="speech-toggle-btn" style="color: var(--accent-green); border-color: #005522;">SPEECH: ON</button>
     </div>
 
     <div class="main-container">
         <div class="terminal-panel">
             <div class="terminal-logs" id="terminal-logs">
-                <div class="log-entry log-sys">[SYSTEM] OCTINITY glass-box initialized with 10,000 isolated neural subroutines.</div>
-                <div class="log-entry log-sys">[GLASS-BOX] Internet scraper proxy linked to secure open-source code registries & lexicons.</div>
-                <div class="log-entry log-mutation">[MUTATION] Heartbeat evolutionary clock armed to 2.0s cycles. Let selection begin.</div>
+                <div class="log-entry log-sys">[SYSTEM] Octinity v4.0 initialized with speech synthesis and popup diagnostics.</div>
+                <div class="log-entry log-sys">[GLASS-BOX] 10,000 subroutines running. Error listener active.</div>
             </div>
             
             <div class="control-strip">
-                <span>OCTINITY MANUAL OVERRIDE:</span>
+                <span>MANUAL OVERRIDE:</span>
                 <button class="btn-action btn-reward" id="reward-btn">+ REWARD ELITE</button>
                 <button class="btn-action btn-punish" id="punish-btn">- PUNISH ELITE</button>
             </div>
 
             <div class="chat-input-area">
-                <input type="text" id="user-input" placeholder="Talk directly to Octinity elite node or inject custom instructions..." />
+                <input type="text" id="user-input" placeholder="Talk to Octinity elite node or command modules..." />
                 <button id="send-btn">SEND</button>
             </div>
         </div>
 
         <div class="inspector-panel">
-            <div class="inspector-header">OCTINITY ELITE NODE CODE MATRICE & GENOME SNAPSHOT</div>
+            <div class="inspector-header">ELITE NODE CODE MATRICE & GENOME SNAPSHOT</div>
             <div class="code-inspector" id="code-inspector">
-// Awaiting initial 2.0s heartbeat cycle across the 10,000 Octinity sandbox models...
+// Awaiting initial heartbeat cycle...
             </div>
-            <div class="inspector-header">OCTINITY HIVE MATRIX TOPOLOGY (10,000 NODES)</div>
+            <div class="inspector-header">HIVE MATRIX TOPOLOGY (10,000 NODES)</div>
             <div class="hive-grid" id="hive-grid"></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="list-modal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <span>OCTINITY // ERROR & ASSISTANCE DIAGNOSTIC LOG</span>
+                <button class="modal-close-btn" id="modal-close-x">[X]</button>
+            </div>
+            <div class="modal-content" id="modal-error-list">
+                <div class="error-item">[DIAGNOSTIC] Zero critical exceptions detected. All 10,000 nodes maintaining syntax integrity.</div>
+            </div>
         </div>
     </div>
 
@@ -368,24 +468,23 @@
         const TOTAL_NODES = 10000;
         const HIVE_DISPLAY_COUNT = 100;
         let generation = 0;
-        let bestFitness = 0;
         let webCacheSize = 128;
-        let selectedNodeIndex = 0;
-        let currentTask = "OPTIMIZE_SORT";
+        let isPaused = false;
+        let speechEnabled = true;
+        let errorLogBuffer = [];
 
         const webCorpusFragments = [
             "function computeLoss(pred, target) { return Math.pow(pred - target, 2); }",
             "const mutateWeights = (arr) => arr.map(w => w + (Math.random() - 0.5) * 0.2);",
             "async function fetchDictionaryToken(word) { return await globalStore.lookup(word); }",
-            "let sorted = input.sort((a, b) => a - b); // Optimized via Octinity registry heuristic",
-            "class OctinityEngine { evaluate() { return this.compileSafely(); } }",
-            "const activation = x => 1 / (1 + Math.exp(-x)); // Sigmoid layer injected"
+            "let sorted = input.sort((a, b) => a - b); // Optimized via Octinity registry",
+            "class OctinityEngine { evaluate() { return this.compileSafely(); } }"
         ];
 
         let nodes = Array.from({ length: TOTAL_NODES }, (_, i) => ({
             id: i,
             fitness: Math.random() * 0.1,
-            code: `// Octinity Genome Node #${i} [Task: ${currentTask}]\nfunction executeTask(input) {\n    let weights = [${Math.random().toFixed(3)}, ${Math.random().toFixed(3)}];\n    return input * weights[0] + Math.sin(weights[1]);\n}`,
+            code: `// Octinity Genome Node #${i}\nfunction executeTask(input) {\n    let weights = [${Math.random().toFixed(3)}, ${Math.random().toFixed(3)}];\n    return input * weights[0] + Math.sin(weights[1]);\n}`,
             memoryLog: "Initialized baseline sandbox stub."
         }));
 
@@ -402,11 +501,6 @@
             gridNodes.push(nodeDiv);
         }
 
-        document.getElementById('task-selector').onchange = (e) => {
-            currentTask = e.target.value;
-            logToTerminal(`[OCTINITY] Objective task re-targeted to: ${currentTask}. Readjusting fitness evaluation metrics across all 10,000 nodes.`, 'sys');
-        };
-
         function logToTerminal(text, type = 'sys') {
             const logs = document.getElementById('terminal-logs');
             const entry = document.createElement('div');
@@ -415,30 +509,121 @@
             entry.textContent = `[${timestamp}] ${text}`;
             logs.appendChild(entry);
             logs.scrollTop = logs.scrollHeight;
+
+            if (type === 'error' || type === 'mutation') {
+                errorLogBuffer.unshift(`[${timestamp}] ${text}`);
+                updateErrorModalList();
+            }
         }
+
+        function updateErrorModalList() {
+            const container = document.getElementById('modal-error-list');
+            if (errorLogBuffer.length === 0) {
+                container.innerHTML = `<div class="error-item">[DIAGNOSTIC] No active errors recorded. System stable.</div>`;
+                return;
+            }
+            container.innerHTML = errorLogBuffer.map(err => `<div class="error-item">${err}</div>`).join('');
+        }
+
+        // Text-to-Speech Output Function
+        function speakText(text) {
+            if (!speechEnabled || !('speechSynthesis' in window)) return;
+            window.speechSynthesis.cancel(); // Stop prior utterance
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 1.0;
+            utterance.pitch = 0.9;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // Button 1: Toggle List Window (Opens/Closes with same button)
+        const listModal = document.getElementById('list-modal');
+        const toggleListBtn = document.getElementById('toggle-list-btn');
+        const modalCloseX = document.getElementById('modal-close-x');
+
+        function toggleListWindow() {
+            const isOpen = listModal.classList.toggle('open');
+            if (isOpen) {
+                toggleListBtn.classList.add('active');
+                toggleListBtn.textContent = "[ CLOSE WINDOW ]";
+            } else {
+                toggleListBtn.classList.remove('active');
+                toggleListBtn.textContent = "[ LIST WINDOW ]";
+            }
+        }
+
+        toggleListBtn.onclick = toggleListWindow;
+        modalCloseX.onclick = toggleListWindow;
+
+        // Button 2: Module Selection Mode Trigger
+        const moduleSelectBtn = document.getElementById('module-select-btn');
+        const moduleDropdown = document.getElementById('module-dropdown');
+        moduleSelectBtn.onclick = () => {
+            const activeMod = moduleDropdown.value;
+            moduleSelectBtn.classList.toggle('active');
+            logToTerminal(`[MODULE] Subroutine focus locked onto subsystem: ${activeMod}`, 'mutation');
+            speakText(`Locked focus onto module ${activeMod}`);
+        };
+
+        // Button 3: Pause / Resume Evolution Heartbeat
+        const pauseBtn = document.getElementById('pause-btn');
+        pauseBtn.onclick = () => {
+            isPaused = !isPaused;
+            if (isPaused) {
+                pauseBtn.classList.add('active');
+                pauseBtn.textContent = "RESUME HIVE";
+                document.getElementById('stat-status').textContent = "PAUSED";
+                logToTerminal(`[SYSTEM] Evolution heartbeat suspended by operator manual override.`, 'error');
+                speakText("Hive paused.");
+            } else {
+                pauseBtn.classList.remove('active');
+                pauseBtn.textContent = "PAUSE HIVE";
+                document.getElementById('stat-status').textContent = "ACTIVE";
+                logToTerminal(`[SYSTEM] Evolution heartbeat resumed.`, 'sys');
+                speakText("Hive resumed.");
+            }
+        };
+
+        // Speech Toggle Button
+        const speechToggleBtn = document.getElementById('speech-toggle-btn');
+        speechToggleBtn.onclick = () => {
+            speechEnabled = !speechEnabled;
+            if (speechEnabled) {
+                speechToggleBtn.textContent = "SPEECH: ON";
+                speechToggleBtn.style.color = "var(--accent-green)";
+                speechToggleBtn.style.borderColor = "#005522";
+            } else {
+                speechToggleBtn.textContent = "SPEECH: OFF";
+                speechToggleBtn.style.color = "var(--accent-red)";
+                speechToggleBtn.style.borderColor = "#551122";
+            }
+        };
 
         function inspectNode(index) {
             selectedNodeIndex = index;
             const target = nodes[index];
-            document.getElementById('code-inspector').textContent = `// OCTINITY NODE INSPECTOR [ID: ${target.id}] // FITNESS: ${target.fitness.toFixed(4)}\n\n${target.code}\n\n// MEMORY: ${target.memoryLog}`;
-            logToTerminal(`Inspected Octinity node ID ${target.id} (Fitness: ${target.fitness.toFixed(4)})`, 'sys');
+            document.getElementById('code-inspector').textContent = `// NODE INSPECTOR [ID: ${target.id}] // FITNESS: ${target.fitness.toFixed(4)}\n\n${target.code}\n\n// MEMORY: ${target.memoryLog}`;
+            logToTerminal(`Inspected node ID ${target.id} (Fitness: ${target.fitness.toFixed(4)})`, 'sys');
         }
 
         document.getElementById('reward-btn').onclick = () => {
             eliteNode.fitness += 1.5;
-            eliteNode.code += `\n    // [OCTINITY REWARD INJECTED] Optimized execution pathway confirmed.`;
-            logToTerminal(`[OCTINITY OVERRIDE] Rewarded elite node #${eliteNode.id}! Fitness boosted to ${eliteNode.fitness.toFixed(4)}.`, 'success');
+            eliteNode.code += `\n    // [REWARD INJECTED] Pathway optimized.`;
+            logToTerminal(`[OVERRIDE] Rewarded elite node #${eliteNode.id}! Fitness: ${eliteNode.fitness.toFixed(4)}.`, 'success');
+            speakText(`Rewarded elite node ${eliteNode.id}`);
             updateUI();
         };
 
         document.getElementById('punish-btn').onclick = () => {
             eliteNode.fitness = Math.max(0, eliteNode.fitness - 1.2);
-            eliteNode.code += `\n    // [OCTINITY PUNISHMENT INJECTED] Pruned unstable syntax branch.`;
-            logToTerminal(`[OCTINITY OVERRIDE] Punished elite node #${eliteNode.id}! Fitness dropped to ${eliteNode.fitness.toFixed(4)}.`, 'error');
+            eliteNode.code += `\n    // [PUNISHMENT INJECTED] Branch pruned.`;
+            logToTerminal(`[ERROR OVERRIDE] Punished elite node #${eliteNode.id}! Fitness: ${eliteNode.fitness.toFixed(4)}.`, 'error');
+            speakText(`Punished elite node ${eliteNode.id}`);
             updateUI();
         };
 
         function heartbeat() {
+            if (isPaused) return;
+
             generation++;
             webCacheSize += Math.floor(Math.random() * 8) + 1;
 
@@ -458,17 +643,16 @@
 
             updateUI();
 
-            if (generation % 3 === 0) {
-                logToTerminal(`[OCTINITY HEARTBEAT] Gen ${generation} | Elite Node #${eliteNode.id} Fitness: ${eliteNode.fitness.toFixed(4)} | Buffer: ${webCacheSize}KB`, 'mutation');
-            } else {
-                logToTerminal(`[OCTINITY HEARTBEAT] Evaluated 10,000 sandbox models. Syntax variations compiled successfully.`, 'sys');
+            if (generation % 4 === 0) {
+                const msg = `Generation ${generation} complete. Elite fitness at ${eliteNode.fitness.toFixed(2)}.`;
+                logToTerminal(`[HEARTBEAT] ${msg}`, 'mutation');
+                speakText(msg);
             }
         }
 
         function updateUI() {
             document.getElementById('stat-gen').textContent = generation;
             document.getElementById('stat-fitness').textContent = eliteNode.fitness.toFixed(4);
-            document.getElementById('stat-cache').textContent = webCacheSize + " KB";
 
             gridNodes.forEach((div, idx) => {
                 const actualIndex = idx * 100;
@@ -477,7 +661,7 @@
                 else if (nodes[actualIndex].fitness > 1.5) div.classList.add('active');
             });
 
-            document.getElementById('code-inspector').textContent = `// OCTINITY ELITE HIVE [ID: ${eliteNode.id}] // GEN: ${generation} // FITNESS: ${eliteNode.fitness.toFixed(4)}\n\n${eliteNode.code}\n\n// STATUS: Autonomous glass-box self-reprogramming loop active.`;
+            document.getElementById('code-inspector').textContent = `// OCTINITY ELITE HIVE [ID: ${eliteNode.id}] // GEN: ${generation} // FITNESS: ${eliteNode.fitness.toFixed(4)}\n\n${eliteNode.code}\n\n// STATUS: Autonomous execution active.`;
         }
 
         setInterval(heartbeat, 2000);
@@ -492,17 +676,13 @@
             const text = inputField.value.trim();
             if (!text) return;
 
-            logToTerminal(`OCTINITY USER CHAT -> ELITE NODE #${eliteNode.id}: "${text}"`, 'sys');
+            logToTerminal(`USER CHAT -> ELITE NODE #${eliteNode.id}: "${text}"`, 'sys');
             inputField.value = '';
 
             setTimeout(() => {
-                const replies = [
-                    `[OCTINITY NODE #${eliteNode.id}] Parsed linguistic tokens. Ingested query into semantic memory buffer.`,
-                    `[OCTINITY NODE #${eliteNode.id}] Adjusting weight matrices based on user prompt. Code convergence efficiency: ${(eliteNode.fitness * 35).toFixed(1)}%.`,
-                    `[OCTINITY NODE #${eliteNode.id}] Acknowledged instruction. Self-reprogramming mutation sequence updated.`
-                ];
-                const reply = replies[Math.floor(Math.random() * replies.length)];
+                const reply = `[ELITE NODE #${eliteNode.id}] Processed input tokens. Executing self-reprogramming vector.`;
                 logToTerminal(reply, 'success');
+                speakText(reply);
             }, 600);
         }
 
