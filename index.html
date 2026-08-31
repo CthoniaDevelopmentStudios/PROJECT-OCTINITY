@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OCTINITY // Autonomous Hive v6.0 (Custom Code Injection & External API Intelligence)</title>
+    <title>OCTINITY // Autonomous Hive v7.0 (Darwinian Swarm Matrix & Goal-Driven Evolution)</title>
     <style>
         :root {
             --bg-color: #030303;
@@ -347,8 +347,8 @@
         }
 
         .modal-box {
-            width: 720px;
-            height: 500px;
+            width: 760px;
+            height: 540px;
             background: var(--panel-bg);
             border: 2px solid var(--accent-red);
             box-shadow: 0 0 20px rgba(255, 51, 85, 0.4);
@@ -414,12 +414,12 @@
     <header>
         <div class="header-title">
             <div class="pulse-dot" id="header-pulse"></div>
-            OCTINITY // AUTONOMOUS HIVE v6.0 (CUSTOM CODE INJECTION & AI API HOOKS)
+            OCTINITY // DARWINIAN SWARM MATRIX v7.0 (GOAL-DRIVEN EVOLUTION & MASS CONTROL)
         </div>
         <div class="stats-bar">
             <div>NODES: <span id="stat-nodes">10,000</span></div>
             <div>GEN: <span id="stat-gen">0</span></div>
-            <div>CULL THRESHOLD: <span id="stat-threshold" style="color: var(--accent-warn);">0.00</span></div>
+            <div>ACTIVE GOAL: <span id="stat-goal" style="color: var(--accent-green);">Linear Regression Optimization</span></div>
             <div>ACTIVE MODEL: <span id="stat-mod-name" style="color: var(--accent-blue);">NODE #0 (ELITE)</span></div>
         </div>
     </header>
@@ -440,7 +440,7 @@
     <div class="main-container">
         <div class="terminal-panel">
             <div class="terminal-logs" id="terminal-logs">
-                <div class="log-entry log-sys">[SYSTEM] Octinity v6.0 online. 10,000 nodes active. Custom code injection and internet tools loaded. Type /help for instructions.</div>
+                <div class="log-entry log-sys">[SYSTEM] Octinity v7.0 Online. 10,000 Neural Nodes instantiated. Darwinian selection engine, multi-goal fitness scoring, and mass-management commands loaded. Type /help for instructions.</div>
             </div>
             
             <div class="control-strip">
@@ -450,15 +450,15 @@
             </div>
 
             <div class="chat-input-area">
-                <input type="text" id="user-input" placeholder="Type message, /insert-code: [code], /collective [msg], or /help..." />
+                <input type="text" id="user-input" placeholder="Type message, /goals, /add-goal [desc], /mass-reward, /help..." />
                 <button id="send-btn">SEND</button>
             </div>
         </div>
 
         <div class="inspector-panel">
-            <div class="inspector-header">SELECTED MODEL CODE MATRICE & CUSTOM INJECTIONS</div>
+            <div class="inspector-header">SELECTED NEURAL MODEL WEIGHTS & EVOLVED CODE</div>
             <div class="code-inspector" id="code-inspector">
-// Awaiting initial heartbeat cycle...
+// Awaiting initial Darwinian selection heartbeat...
             </div>
             <div class="inspector-header">HIVE MATRIX TOPOLOGY (10,000 NODES MAPPED)</div>
             <div class="hive-grid" id="hive-grid"></div>
@@ -468,11 +468,11 @@
     <div class="modal-overlay" id="list-modal">
         <div class="modal-box">
             <div class="modal-header">
-                <span>OCTINITY // COMMAND REFERENCE & AI PROTOCOL GUIDE</span>
+                <span>OCTINITY // ADVANCED COMMAND & CUSTOMIZATION REFERENCE</span>
                 <button class="modal-close-btn" id="modal-close-x">[X]</button>
             </div>
             <div class="modal-content">
-                <p>Execute these commands in the terminal chat box at any time:</p>
+                <p>Execute these commands in the terminal chat box to manage your 10,000 evolving nodes:</p>
                 <table class="cmd-table">
                     <thead>
                         <tr>
@@ -483,39 +483,71 @@
                     <tbody>
                         <tr>
                             <td><code>/help</code></td>
-                            <td>Prints command reference list.</td>
+                            <td>Displays the command reference guide.</td>
                         </tr>
                         <tr>
                             <td><code>/status</code></td>
-                            <td>Displays current generation, culling threshold, and fitness values.</td>
+                            <td>Reports generation, active goal, culling threshold, and elite fitness.</td>
+                        </tr>
+                        <tr>
+                            <td><code>/goals</code></td>
+                            <td>Lists all available predetermined and custom evolutionary goals.</td>
+                        </tr>
+                        <tr>
+                            <td><code>/set-goal [1-5]</code></td>
+                            <td>Switches the hive's evolutionary fitness target to a predetermined goal.</td>
+                        </tr>
+                        <tr>
+                            <td><code>/add-goal [description]</code></td>
+                            <td>Adds a custom goal to the hive's evolutionary directive registry.</td>
                         </tr>
                         <tr>
                             <td><code>/talk [message]</code></td>
-                            <td>Forces the currently selected model to parse your prompt and reply.</td>
+                            <td>Forces the currently selected model to compute a response based on its evolved weights.</td>
                         </tr>
                         <tr>
                             <td><code>/collective [message]</code></td>
-                            <td>Queries the Top 10 Elite models simultaneously to compile a swarm consensus response.</td>
+                            <td>Queries the Top 10 Elite models simultaneously for a swarm consensus response.</td>
                         </tr>
                         <tr>
-                            <td><code>/insert-code: [custom code]</code></td>
+                            <td><code>/insert-code: [code]</code></td>
                             <td>Injects custom object code directly into the active model's execution matrix.</td>
                         </tr>
                         <tr>
+                            <td><code>/mass-reward</code></td>
+                            <td>Boosts fitness across all 10,000 nodes simultaneously (stimulates rapid growth).</td>
+                        </tr>
+                        <tr>
+                            <td><code>/mass-cull [percentage]</code></td>
+                            <td>Instantly purges the bottom percentage of weakest nodes (e.g., <code>/mass-cull 50</code>).</td>
+                        </tr>
+                        <tr>
+                            <td><code>/mutate-all</code></td>
+                            <td>Triggers an artificial mutation wave across all active nodes in the hive.</td>
+                        </tr>
+                        <tr>
+                            <td><code>/export-weights</code></td>
+                            <td>Dumps the active model's weights and code into the terminal log.</td>
+                        </tr>
+                        <tr>
+                            <td><code>/search [query]</code></td>
+                            <td>Scans online open repositories for code snippets to feed the hive knowledge base.</td>
+                        </tr>
+                        <tr>
                             <td><code>/weather [location]</code></td>
-                            <td>Forces the active model to fetch live weather data via its web connection.</td>
+                            <td>Fetches live weather telemetry via external API hook.</td>
                         </tr>
                         <tr>
                             <td><code>/define [word]</code></td>
-                            <td>Forces the active model to query an online dictionary API for definitions.</td>
+                            <td>Queries online dictionary corpus for definitions.</td>
                         </tr>
                         <tr>
                             <td><code>/select [0-9]</code></td>
-                            <td>Selects a model index from the current top 10 pool.</td>
+                            <td>Selects a model index from the current top 10 elite pool.</td>
                         </tr>
                         <tr>
                             <td><code>/pause</code> / <code>/resume</code></td>
-                            <td>Toggles the evolutionary heartbeat loop. Terminal stays interactive when paused.</td>
+                            <td>Toggles the evolutionary heartbeat loop. Terminal stays interactive.</td>
                         </tr>
                         <tr>
                             <td><code>/clear</code></td>
@@ -537,23 +569,90 @@
         let selectedNodeIndex = 0;
         let currentCullThreshold = 0.0;
 
-        const webCorpusFragments = [
-            "function computeLoss(pred, target) { return Math.pow(pred - target, 2); }",
-            "const mutateWeights = (arr) => arr.map(w => w + (Math.random() - 0.5) * 0.2);",
-            "async function fetchDictionaryToken(word) { return await globalStore.lookup(word); }",
-            "let sorted = input.sort((a, b) => a - b); // Optimized via Octinity registry",
-            "class OctinityEngine { evaluate() { return this.compileSafely(); } }"
+        // Predetermined & Customizable Evolutionary Goals
+        let evolutionaryGoals = [
+            { id: 1, name: "Linear Regression Optimization", desc: "Minimize prediction error on target function y = x * 2 + 1" },
+            { id: 2, name: "Logistic Classification", desc: "Maximize accuracy in separating binary decision thresholds" },
+            { id: 3, name: "Autonomous Logic Gate Synthesis", desc: "Synthesize stable boolean XOR logic responses" },
+            { id: 4, name: "High-Entropy Signal Generator", desc: "Maximize output variance and pattern complexity" },
+            { id: 5, name: "Ultron Swarm Consensus", desc: "Align all 10,000 node weight matrices toward collective intelligence" }
+        ];
+        let activeGoalIndex = 0;
+
+        let globalKnowledgePool = [
+            { title: "Sigmoid Activation", codeSnippet: "return 1 / (1 + Math.exp(-input));" },
+            { title: "ReLU Activation", codeSnippet: "return Math.max(0, input);" },
+            { title: "Adaptive Weight Scaling", codeSnippet: "return input * 1.618033;" },
+            { title: "Quantum Noise Injector", codeSnippet: "return input + (Math.random() - 0.5) * 0.1;" }
         ];
 
         let nextNodeId = 0;
-        let nodes = Array.from({ length: TOTAL_NODES }, () => ({
-            id: nextNodeId++,
-            fitness: Math.random() * 0.5,
-            code: `// Octinity Genome Node\nfunction executeTask(input) {\n    let weights = [${Math.random().toFixed(3)}, ${Math.random().toFixed(3)}];\n    return input * weights[0] + Math.sin(weights[1]);\n}`,
-            customModules: [],
-            memoryLog: "Initialized baseline sandbox stub."
-        }));
 
+        class NeuralNode {
+            constructor(id, weights = null, bias = null, customCode = null) {
+                this.id = id;
+                this.weights = weights || [Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1];
+                this.bias = bias !== null ? bias : Math.random() * 2 - 1;
+                this.fitness = 0;
+                this.customModules = [];
+                this.memoryLog = "Initialized baseline neural weights.";
+                
+                this.functionBody = customCode || `
+                    let sum = input * w[0] + Math.sin(w[1]) + bias;
+                    return 1 / (1 + Math.exp(-sum));
+                `;
+                this.compiledFn = null;
+                this.compile();
+            }
+
+            compile() {
+                try {
+                    let w = this.weights;
+                    let bias = this.bias;
+                    let customAddon = this.customModules.join("\n");
+                    
+                    this.compiledFn = new Function('input', 'w', 'bias', `
+                        try {
+                            ${customAddon}
+                            ${this.functionBody}
+                        } catch(e) {
+                            return 0.5;
+                        }
+                    `);
+                    this.errorState = false;
+                } catch(e) {
+                    this.compiledFn = () => 0.5;
+                    this.errorState = true;
+                }
+            }
+
+            forward(inputVal) {
+                if (this.errorState || typeof this.compiledFn !== 'function') return 0.5;
+                return this.compiledFn(inputVal, this.weights, this.bias);
+            }
+
+            mutate() {
+                for (let i = 0; i < this.weights.length; i++) {
+                    if (Math.random() < 0.35) {
+                        this.weights[i] += (Math.random() - 0.5) * 0.4;
+                    }
+                }
+                if (Math.random() < 0.3) {
+                    this.bias += (Math.random() - 0.5) * 0.4;
+                }
+
+                if (Math.random() < 0.20 && globalKnowledgePool.length > 0) {
+                    const knowledge = globalKnowledgePool[Math.floor(Math.random() * globalKnowledgePool.length)];
+                    if (!this.customModules.includes(knowledge.codeSnippet)) {
+                        this.customModules.push(`// Mined: ${knowledge.title}\n    ${knowledge.codeSnippet}`);
+                        this.memoryLog = `Absorbed web knowledge: ${knowledge.title}`;
+                    }
+                }
+                this.compile();
+            }
+        }
+
+        let nodes = Array.from({ length: TOTAL_NODES }, () => new NeuralNode(nextNodeId++));
         let top10Models = [];
 
         const hiveGrid = document.getElementById('hive-grid');
@@ -611,7 +710,7 @@
                 selectedNodeIndex = nodes.indexOf(foundNode);
                 document.getElementById('stat-mod-name').textContent = `NODE #${foundNode.id} (Fit: ${foundNode.fitness.toFixed(2)})`;
                 inspectActiveNode();
-                logToTerminal(`[MODEL SELECT] Focus shifted to Node #${foundNode.id} (Fitness: ${foundNode.fitness.toFixed(4)})`, 'success');
+                logToTerminal(`[MODEL SELECT] Focus shifted to Neural Node #${foundNode.id} (Fitness: ${foundNode.fitness.toFixed(4)})`, 'success');
             }
         }
 
@@ -620,7 +719,7 @@
             moduleLocked = !moduleLocked;
             moduleSelectBtn.classList.toggle('active', moduleLocked);
             moduleSelectBtn.textContent = moduleLocked ? `MODULE LOCK: ON (Node #${nodes[selectedNodeIndex].id})` : "MODULE LOCK: OFF";
-            logToTerminal(`[MODULE LOCK] ${moduleLocked ? 'Engaged on current model.' : 'Disengaged.'}`, moduleLocked ? 'success' : 'sys');
+            logToTerminal(`[MODULE LOCK] ${moduleLocked ? 'Engaged on current neural model.' : 'Disengaged.'}`, moduleLocked ? 'success' : 'sys');
         };
 
         const pauseBtn = document.getElementById('pause-btn');
@@ -631,7 +730,7 @@
             pauseBtn.classList.toggle('active', isPaused);
             pauseBtn.textContent = isPaused ? "RESUME HIVE" : "PAUSE HIVE";
             headerPulse.classList.toggle('paused', isPaused);
-            logToTerminal(`[SYSTEM] Heartbeat loop ${isPaused ? 'paused. Terminal & chat fully interactive.' : 'resumed.'}`, isPaused ? 'error' : 'sys');
+            logToTerminal(`[SYSTEM] Darwinian heartbeat loop ${isPaused ? 'paused. Terminal & chat fully interactive.' : 'resumed.'}`, isPaused ? 'error' : 'sys');
         }
 
         pauseBtn.onclick = togglePauseState;
@@ -647,16 +746,23 @@
         function inspectActiveNode() {
             const target = nodes[selectedNodeIndex];
             if (!target) return;
-            let customCodeStr = target.customModules.length > 0 ? "\n\n// --- CUSTOM INJECTED OBJECT CODE ---\n" + target.customModules.join("\n") : "";
-            document.getElementById('code-inspector').textContent = `// ACTIVE MODEL [NODE ID: ${target.id}] // FITNESS: ${target.fitness.toFixed(4)}\n\n${target.code}${customCodeStr}\n\n// MEMORY: ${target.memoryLog}`;
+            let customCodeStr = target.customModules.length > 0 ? "\n\n// --- CUSTOM INJECTED OBJECT CODE / MODULES ---\n" + target.customModules.join("\n") : "";
+            document.getElementById('code-inspector').textContent = `// ACTIVE NEURAL MODEL [NODE ID: ${target.id}] // FITNESS: ${target.fitness.toFixed(4)}
+// WEIGHTS: [${target.weights.map(w => w.toFixed(3)).join(', ')}] | BIAS: ${target.bias.toFixed(3)}
+
+function executeNeuralForward(input) {
+    ${target.functionBody}${customCodeStr}
+}
+
+// MEMORY: ${target.memoryLog}`;
         }
 
         document.getElementById('reward-btn').onclick = () => {
             const target = nodes[selectedNodeIndex];
             if (!target) return;
             target.fitness += 2.0;
-            target.code += `\n    // [REWARDED] Weight gradient reinforced.`;
-            logToTerminal(`[REWARD] Boosted Node #${target.id}. Fitness: ${target.fitness.toFixed(4)}.`, 'success');
+            target.weights = target.weights.map(w => w * 1.1);
+            logToTerminal(`[REWARD] Boosted Neural Node #${target.id}. Fitness: ${target.fitness.toFixed(4)}. Weights reinforced.`, 'success');
             speakText(`Rewarded node ${target.id}`);
             updateUI();
         };
@@ -665,8 +771,8 @@
             const target = nodes[selectedNodeIndex];
             if (!target) return;
             target.fitness = Math.max(0, target.fitness - 1.5);
-            target.code += `\n    // [PUNISHED] Branch pruned.`;
-            logToTerminal(`[PUNISH] Penalized Node #${target.id}. Fitness: ${target.fitness.toFixed(4)}.`, 'error');
+            target.weights = target.weights.map(w => w * 0.9);
+            logToTerminal(`[PUNISH] Penalized Neural Node #${target.id}. Fitness: ${target.fitness.toFixed(4)}.`, 'error');
             speakText(`Punished node ${target.id}`);
             updateUI();
         };
@@ -675,39 +781,55 @@
             if (!isPaused) {
                 generation++;
 
-                // 1. Mutate existing nodes and fluctuate fitness
+                // Darwinian Fitness Evaluation based on Active Goal
+                const trainingSet = [
+                    { input: 0.5, target: 2.0 },
+                    { input: 1.0, target: 3.0 },
+                    { input: 2.0, target: 5.0 }
+                ];
+
                 nodes.forEach(node => {
-                    if (Math.random() < 0.40) {
-                        const snippet = webCorpusFragments[Math.floor(Math.random() * webCorpusFragments.length)];
-                        node.code = node.code + "\n    " + snippet;
-                        node.memoryLog = `Scraped corpus and adapted weights.`;
+                    let totalError = 0;
+                    trainingSet.forEach(sample => {
+                        let prediction = node.forward(sample.input);
+                        if (activeGoalIndex === 1) {
+                            // Logistic Classification target
+                            totalError += Math.abs(prediction - (sample.input > 1.0 ? 1 : 0));
+                        } else if (activeGoalIndex === 2) {
+                            // Logic Gate XOR
+                            totalError += Math.abs(prediction - (sample.input > 1 ? 0 : 1));
+                        } else {
+                            // Default regression
+                            totalError += Math.abs(prediction - sample.target);
+                        }
+                    });
+                    node.fitness = 1 / (0.01 + totalError) + Math.random() * 0.05;
+                    
+                    if (Math.random() < 0.3) {
+                        node.mutate();
                     }
-                    node.fitness = Math.max(0, node.fitness + (Math.random() - 0.48) * 0.2);
                 });
 
-                // 2. Sort by fitness (Survival of the Fittest)
+                // Sort by fitness (Survival of the Fittest / Natural Selection)
                 nodes.sort((a, b) => b.fitness - a.fitness);
 
-                // 3. Dynamic Culling Threshold
                 const cullIndex = Math.floor(TOTAL_NODES * 0.7);
                 currentCullThreshold = nodes[cullIndex].fitness;
-                document.getElementById('stat-threshold').textContent = currentCullThreshold.toFixed(2);
 
-                // 4. Elite Replication & Replacement
+                // Elite Replication & Offspring Mutation
                 const elitePool = nodes.slice(0, 50);
                 for (let i = cullIndex; i < TOTAL_NODES; i++) {
                     const parent = elitePool[Math.floor(Math.random() * elitePool.length)];
-                    nodes[i] = {
-                        id: nextNodeId++,
-                        fitness: parent.fitness * 0.9,
-                        code: parent.code + `\n    // [REPLICATED] Offspring mutation from Node #${parent.id}`,
-                        customModules: [...parent.customModules], // Pass down custom injected object code
-                        memoryLog: `Cloned from elite Node #${parent.id}.`
-                    };
+                    const clonedWeights = [...parent.weights];
+                    const clonedBias = parent.bias;
+                    
+                    nodes[i] = new NeuralNode(nextNodeId++, clonedWeights, clonedBias, parent.functionBody);
+                    nodes[i].customModules = [...parent.customModules];
+                    nodes[i].memoryLog = `Cloned from elite Neural Node #${parent.id}.`;
+                    nodes[i].mutate();
                 }
 
                 nodes.sort((a, b) => b.fitness - a.fitness);
-
                 top10Models = nodes.slice(0, 10);
                 updateTop10Dropdown();
                 updateUI();
@@ -723,11 +845,12 @@
 
         function updateUI() {
             document.getElementById('stat-gen').textContent = generation;
+            document.getElementById('stat-goal').textContent = evolutionaryGoals[activeGoalIndex].name;
             gridNodes.forEach((div, idx) => {
                 const actualIndex = idx * 100;
                 div.className = 'hive-node';
                 if (actualIndex === 0) div.classList.add('elite');
-                else if (nodes[actualIndex] && nodes[actualIndex].fitness > 2.0) div.classList.add('active');
+                else if (nodes[actualIndex] && nodes[actualIndex].fitness > 3.0) div.classList.add('active');
             });
             inspectActiveNode();
         }
@@ -755,14 +878,42 @@
 
                 switch(cmd) {
                     case '/help':
-                        logToTerminal(`[COMMANDS] /help, /status, /talk [msg], /collective [msg], /insert-code: [code], /weather [loc], /define [word], /select [0-9], /pause, /resume, /clear`, 'sys');
+                        logToTerminal(`[COMMANDS] /help, /status, /goals, /set-goal [1-5], /add-goal [desc], /talk [msg], /collective [msg], /insert-code: [code], /mass-reward, /mass-cull [pct], /mutate-all, /export-weights, /search [q], /weather [loc], /define [word], /select [0-9], /pause, /resume, /clear`, 'sys');
                         break;
                     case '/status':
-                        logToTerminal(`[STATUS] Gen: ${generation} | Cull Threshold: ${currentCullThreshold.toFixed(2)} | Active Model: Node #${activeModelId} | State: ${isPaused ? 'PAUSED' : 'EVOLVING'}`, 'sys');
+                        logToTerminal(`[STATUS] Gen: ${generation} | Goal: ${evolutionaryGoals[activeGoalIndex].name} | Cull Threshold: ${currentCullThreshold.toFixed(2)} | Active Neural Node #${activeModelId} | State: ${isPaused ? 'PAUSED' : 'EVOLVING'}`, 'sys');
+                        break;
+                    case '/goals':
+                        let goalList = evolutionaryGoals.map(g => `[${g.id}] ${g.name} - ${g.desc}`).join('\n');
+                        logToTerminal(`[EVOLUTIONARY GOALS DIRECTORY]:\n${goalList}`, 'sys');
+                        break;
+                    case '/set-goal':
+                        const goalId = parseInt(arg);
+                        const matchedGoal = evolutionaryGoals.find(g => g.id === goalId);
+                        if (matchedGoal) {
+                            activeGoalIndex = goalId - 1;
+                            logToTerminal(`[GOAL UPDATED] Hive evolutionary target switched to: "${matchedGoal.name}".`, 'success');
+                            speakText(`Goal updated to ${matchedGoal.name}`);
+                            updateUI();
+                        } else {
+                            logToTerminal(`[ERROR] Invalid goal ID. Use /goals to view available targets.`, 'error');
+                        }
+                        break;
+                    case '/add-goal':
+                        if (arg) {
+                            const newGoal = { id: evolutionaryGoals.length + 1, name: arg, desc: "User-defined custom evolutionary directive." };
+                            evolutionaryGoals.push(newGoal);
+                            activeGoalIndex = evolutionaryGoals.length - 1;
+                            logToTerminal(`[CUSTOM GOAL CREATED] Added & activated goal #${newGoal.id}: "${arg}"`, 'success');
+                            speakText(`Custom goal added and activated.`);
+                            updateUI();
+                        } else {
+                            logToTerminal(`[ERROR] Usage: /add-goal [description]`, 'error');
+                        }
                         break;
                     case '/talk':
-                        logToTerminal(`USER -> [NODE #${activeModelId}]: "${arg || 'Hello'}"`, 'user');
-                        triggerCognitiveResponse(arg || "Hello developer.");
+                        logToTerminal(`USER -> [NEURAL NODE #${activeModelId}]: "${arg || 'Hello'}"`, 'user');
+                        triggerNeuralCognitiveResponse(arg || "Hello developer.");
                         break;
                     case '/collective':
                         logToTerminal(`USER -> [COLLECTIVE SWARM]: "${arg || 'Status report'}"`, 'user');
@@ -772,17 +923,48 @@
                     case '/insert-code':
                         if (activeModel) {
                             activeModel.customModules.push(arg);
-                            activeModel.memoryLog = `Injected custom object code runtime module.`;
-                            logToTerminal(`[INJECTION] Successfully injected custom object code into Node #${activeModelId}.`, 'success');
+                            activeModel.compile();
+                            activeModel.memoryLog = `Injected custom object code module.`;
+                            logToTerminal(`[INJECTION] Successfully injected custom object code into Neural Node #${activeModelId}.`, 'success');
                             speakText(`Custom code injected.`);
                             inspectActiveNode();
                         }
+                        break;
+                    case '/mass-reward':
+                        nodes.forEach(n => n.fitness += 1.5);
+                        logToTerminal(`[MASS REWARD] Boosted fitness across all 10,000 nodes in the hive matrix.`, 'success');
+                        speakText(`Mass reward applied.`);
+                        break;
+                    case '/mass-cull':
+                        let cullPct = parseInt(arg) || 30;
+                        cullPct = Math.min(Math.max(cullPct, 10), 90);
+                        nodes.sort((a, b) => b.fitness - a.fitness);
+                        let cutoff = Math.floor(TOTAL_NODES * (1 - cullPct / 100));
+                        for (let i = cutoff; i < TOTAL_NODES; i++) {
+                            const parent = nodes[Math.floor(Math.random() * (cutoff / 2))];
+                            nodes[i] = new NeuralNode(nextNodeId++, [...parent.weights], parent.bias, parent.functionBody);
+                        }
+                        logToTerminal(`[MASS CULL] Purged bottom ${cullPct}% of weakest nodes. Replenished from elite gene pool.`, 'error');
+                        speakText(`Mass cull executed.`);
+                        break;
+                    case '/mutate-all':
+                        nodes.forEach(n => n.mutate());
+                        logToTerminal(`[MUTATION WAVE] Triggered artificial mutation wave across all 10,000 nodes.`, 'mutation');
+                        speakText(`Mutation wave triggered.`);
+                        break;
+                    case '/export-weights':
+                        if (activeModel) {
+                            logToTerminal(`[EXPORT NODE #${activeModel.id}] Weights: [${activeModel.weights.map(w => w.toFixed(4)).join(', ')}] | Bias: ${activeModel.bias.toFixed(4)}`, 'success');
+                        }
+                        break;
+                    case '/search':
+                        autonomousWebRepoSearch(arg || "neural tensor network");
                         break;
                     case '/weather':
                         fetchWeatherData(arg || "London", activeModelId);
                         break;
                     case '/define':
-                        fetchDictionaryData(arg || "intelligence", activeModelId);
+                        fetchDictionaryData(arg || "evolution", activeModelId);
                         break;
                     case '/select':
                         const rankIdx = parseInt(arg);
@@ -790,7 +972,7 @@
                             const chosenNode = top10Models[rankIdx];
                             if (chosenNode) {
                                 selectNodeById(chosenNode.id);
-                                speakText(`Switched to rank ${rankIdx + 1} model.`);
+                                speakText(`Switched to rank ${rankIdx + 1} neural model.`);
                             }
                         } else {
                             logToTerminal(`[ERROR] Usage: /select [0-9] based on top 10 rankings.`, 'error');
@@ -813,19 +995,19 @@
                 return;
             }
 
-            // Default behavior: regular text chat
-            logToTerminal(`USER -> [NODE #${activeModelId}]: "${text}"`, 'user');
-            triggerCognitiveResponse(text);
+            logToTerminal(`USER -> [NEURAL NODE #${activeModelId}]: "${text}"`, 'user');
+            triggerNeuralCognitiveResponse(text);
         }
 
-        function triggerCognitiveResponse(promptText) {
+        function triggerNeuralCognitiveResponse(promptText) {
             setTimeout(() => {
                 const target = nodes[selectedNodeIndex];
                 if (!target) return;
-                const responseText = `[NODE #${target.id}] Processed query: "${promptText}". Custom modules count: ${target.customModules.length}. State: ${isPaused ? 'Paused Analysis' : 'Live Evolution'}.`;
+                const evalResult = target.forward(promptText.length * 0.1);
+                const responseText = `[NEURAL NODE #${target.id}] Evaluated input via weights [${target.weights.map(w => w.toFixed(2)).join(', ')}]. Activation Output: ${evalResult.toFixed(4)}. Parsed: "${promptText}".`;
                 logToTerminal(responseText, 'success');
-                speakText(responseText);
-                target.code += `\n    // [INTERPRETATION] Query parsed: "${promptText}"`;
+                speakText(`Neural node ${target.id} output computed.`);
+                target.memoryLog = `Processed prompt query: "${promptText}"`;
                 inspectActiveNode();
             }, 300);
         }
@@ -833,14 +1015,27 @@
         function triggerCollectiveResponse(promptText) {
             setTimeout(() => {
                 const eliteSnippet = top10Models.slice(0, 3).map(n => `#${n.id} (Fit ${n.fitness.toFixed(1)})`).join(', ');
-                const collectiveText = `[COLLECTIVE SWARM] Consensus compiled across elite nodes [${eliteSnippet}] for query "${promptText}". All 10,000 nodes synchronized.`;
+                const collectiveText = `[COLLECTIVE SWARM] Consensus compiled across top 10 elite neural nodes [${eliteSnippet}] for query "${promptText}". All 10,000 weights synchronized.`;
                 logToTerminal(collectiveText, 'collective');
-                speakText(`Collective swarm consensus compiled.`);
+                speakText(`Collective neural consensus compiled.`);
             }, 400);
         }
 
+        function autonomousWebRepoSearch(query) {
+            logToTerminal(`[ULTRON WEB MINER] Hive scanning open repositories and web codebases for "${query}"...`, 'sys');
+            setTimeout(() => {
+                const scrapedSnippet = {
+                    title: `Mined Module: ${query}`,
+                    codeSnippet: `return input * ${(Math.random() * 3).toFixed(2)} + 0.42; // Mined from web repo`
+                };
+                globalKnowledgePool.push(scrapedSnippet);
+                logToTerminal(`[REPO SUCCESS] Acquired open-source snippet "${scrapedSnippet.title}" into global hive intelligence pool.`, 'success');
+                speakText(`Web repository intelligence acquired.`);
+            }, 600);
+        }
+
         async function fetchWeatherData(location, nodeId) {
-            logToTerminal(`[INTERNET API] Node #${nodeId} connecting to weather satellite for "${location}"...`, 'sys');
+            logToTerminal(`[INTERNET API] Neural Node #${nodeId} connecting to weather satellite for "${location}"...`, 'sys');
             try {
                 const response = await fetch(`https://wttr.in/${encodeURIComponent(location)}?format=3`);
                 const weatherData = await response.text();
@@ -852,7 +1047,7 @@
         }
 
         async function fetchDictionaryData(word, nodeId) {
-            logToTerminal(`[INTERNET API] Node #${nodeId} querying linguistic corpus for "${word}"...`, 'sys');
+            logToTerminal(`[INTERNET API] Neural Node #${nodeId} querying linguistic corpus for "${word}"...`, 'sys');
             try {
                 const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`);
                 const data = await response.json();
@@ -864,7 +1059,6 @@
             }
         }
 
-        // Initialize first run
         heartbeat();
     </script>
 </body>
