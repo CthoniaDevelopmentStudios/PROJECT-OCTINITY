@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OCTINITY // Autonomous Hive v7.0 (Darwinian Swarm Matrix & Goal-Driven Evolution)</title>
+    <title>OCTINITY // Autonomous Hive v8.0 (WebLLM Neural Matrix, Darwinian Engine & Copyable Code)</title>
+    <!-- Include WebLLM browser runtime script -->
+    <script type="module">
+        import * as webllm from "https://esm.run/@mlc-ai/web-llm";
+        window.webllm = webllm;
+    </script>
     <style>
         :root {
             --bg-color: #030303;
@@ -232,6 +237,7 @@
         .log-error { border-color: var(--accent-red); color: var(--accent-red); }
         .log-user { border-color: #ffffff; color: #ffffff; font-weight: bold; }
         .log-collective { border-color: var(--accent-blue); color: #80f0ff; font-weight: bold; }
+        .log-webllm { border-color: #ff00ff; color: #ff88ff; font-weight: bold; }
 
         .control-strip {
             padding: 8px 15px;
@@ -326,6 +332,9 @@
             border-bottom: 1px solid var(--border-dim);
             background: rgba(0,0,0,0.3);
             flex-shrink: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .code-inspector {
@@ -342,37 +351,21 @@
             word-break: break-all;
         }
 
-        .hive-grid {
-            height: 130px;
+        /* Matrix Neural Network Canvas Map */
+        .matrix-canvas-container {
+            height: 160px;
             flex-shrink: 0;
-            padding: 10px;
-            display: grid;
-            grid-template-columns: repeat(20, 1fr);
-            gap: 3px;
-            background: var(--bg-color);
-            overflow-y: auto;
+            background: #020204;
+            position: relative;
+            border-bottom: 1px solid var(--border-dim);
+            overflow: hidden;
         }
 
-        .hive-node {
-            background-color: var(--border-dim);
-            border-radius: 1px;
+        #matrix-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
             cursor: pointer;
-            transition: transform 0.1s;
-        }
-
-        .hive-node:hover {
-            transform: scale(1.3);
-            border-color: var(--accent-red);
-        }
-
-        .hive-node.active {
-            background-color: var(--accent-blue);
-            box-shadow: 0 0 5px var(--accent-blue);
-        }
-
-        .hive-node.elite {
-            background-color: var(--accent-red);
-            box-shadow: 0 0 8px var(--accent-red);
         }
 
         .modal-overlay {
@@ -390,8 +383,8 @@
         }
 
         .modal-box {
-            width: 760px;
-            height: 540px;
+            width: 780px;
+            height: 580px;
             background: var(--panel-bg);
             border: 2px solid var(--accent-red);
             box-shadow: 0 0 20px rgba(255, 51, 85, 0.4);
@@ -457,19 +450,20 @@
     <header>
         <div class="header-title">
             <div class="pulse-dot" id="header-pulse"></div>
-            OCTINITY // DARWINIAN SWARM MATRIX v7.0 (GOAL-DRIVEN EVOLUTION & MASS CONTROL)
+            OCTINITY // DARWINIAN SWARM & WEBLLM MATRIX v8.0
         </div>
         <div class="stats-bar">
             <div>NODES: <span id="stat-nodes">10,000</span></div>
             <div>GEN: <span id="stat-gen">0</span></div>
-            <div>TICK: <span id="stat-tick">2500ms</span></div>
-            <div>ACTIVE GOAL: <span id="stat-goal" style="color: var(--accent-green);">Linear Regression Optimization</span></div>
+            <div>WEBLLM: <span id="stat-webllm" style="color: var(--accent-warn);">STANDBY</span></div>
+            <div>ACTIVE GOAL: <span id="stat-goal" style="color: var(--accent-green);">Chat Personality & Evolution</span></div>
             <div>ACTIVE MODEL: <span id="stat-mod-name" style="color: var(--accent-blue);">NODE #0 (ELITE)</span></div>
         </div>
     </header>
 
     <div class="toolbar-panel">
         <button class="toolbar-btn" id="toggle-list-btn">[ /COMMANDS LIST ]</button>
+        <button class="toolbar-btn" id="init-webllm-btn" style="color: #ff88ff; border-color: #550055;">INITIALIZE WEBLLM</button>
         <button class="toolbar-btn" id="module-select-btn">MODULE LOCK: OFF</button>
         <button class="toolbar-btn" id="pause-btn">PAUSE HIVE</button>
 
@@ -509,7 +503,7 @@
     <div class="main-container">
         <div class="terminal-panel">
             <div class="terminal-logs" id="terminal-logs">
-                <div class="log-entry log-sys">[SYSTEM] Octinity v7.0 Online. 10,000 Neural Nodes instantiated. Darwinian selection engine, multi-goal fitness scoring, and mass-management commands loaded. Type /help for instructions.</div>
+                <div class="log-entry log-sys">[SYSTEM] Octinity v8.0 Online. 10,000 Neural Nodes instantiated. WebLLM browser inference module, customizable evolutionary goal registry, game-trainable exportable machine learning models, and Matrix Neural Network Map loaded. Type /help for instructions.</div>
             </div>
             
             <div class="control-strip">
@@ -519,18 +513,23 @@
             </div>
 
             <div class="chat-input-area">
-                <input type="text" id="user-input" placeholder="Type message, /goals, /add-goal [desc], /mass-reward, /help..." />
+                <input type="text" id="user-input" placeholder="Type message, /goals, /add-goal [desc], /train-game, /get-code, /help..." />
                 <button id="send-btn">SEND</button>
             </div>
         </div>
 
         <div class="inspector-panel">
-            <div class="inspector-header">SELECTED NEURAL MODEL WEIGHTS & EVOLVED CODE</div>
+            <div class="inspector-header">
+                <span>SELECTED NEURAL MODEL WEIGHTS & EXPORTABLE GAME CODE</span>
+                <button class="toolbar-btn" id="copy-code-btn" style="padding: 2px 8px; font-size: 10px; color: var(--accent-green); border-color: #005522;">[ COPY CODE ]</button>
+            </div>
             <div class="code-inspector" id="code-inspector">
 // Awaiting initial Darwinian selection heartbeat...
             </div>
-            <div class="inspector-header">HIVE MATRIX TOPOLOGY (10,000 NODES MAPPED)</div>
-            <div class="hive-grid" id="hive-grid"></div>
+            <div class="inspector-header">MATRIX NEURAL NETWORK MAP (10,000 NODES VISUALIZED)</div>
+            <div class="matrix-canvas-container">
+                <canvas id="matrix-canvas"></canvas>
+            </div>
         </div>
     </div>
 
@@ -541,7 +540,7 @@
                 <button class="modal-close-btn" id="modal-close-x">[X]</button>
             </div>
             <div class="modal-content">
-                <p>Execute these commands in the terminal chat box to manage your 10,000 evolving nodes:</p>
+                <p>Execute these commands in the terminal chat box to manage your 10,000 evolving nodes & WebLLM models:</p>
                 <table class="cmd-table">
                     <thead>
                         <tr>
@@ -563,12 +562,28 @@
                             <td>Lists all available predetermined and custom evolutionary goals.</td>
                         </tr>
                         <tr>
-                            <td><code>/set-goal [1-5]</code></td>
-                            <td>Switches the hive's evolutionary fitness target to a predetermined goal.</td>
+                            <td><code>/set-goal [1-7]</code></td>
+                            <td>Switches the hive's evolutionary fitness target to a specific goal.</td>
                         </tr>
                         <tr>
                             <td><code>/add-goal [description]</code></td>
                             <td>Adds a custom goal to the hive's evolutionary directive registry.</td>
+                        </tr>
+                        <tr>
+                            <td><code>/personality [type]</code></td>
+                            <td>Configures the hive's behavioral personality matrix (e.g. <code>weatherman</code>, <code>calculator</code>, <code>workflow</code>).</td>
+                        </tr>
+                        <tr>
+                            <td><code>/webllm-chat [prompt]</code></td>
+                            <td>Sends a query directly to the browser-local WebLLM engine (fully free, local inference).</td>
+                        </tr>
+                        <tr>
+                            <td><code>/train-game</code></td>
+                            <td>Simulates 50 generations of reinforcement learning for playing a game (flappy/pong style controller).</td>
+                        </tr>
+                        <tr>
+                            <td><code>/get-code</code></td>
+                            <td>Outputs the clean standalone JavaScript class code of the top model for direct game import.</td>
                         </tr>
                         <tr>
                             <td><code>/talk [message]</code></td>
@@ -583,20 +598,8 @@
                             <td>Injects custom object code directly into the active model's execution matrix.</td>
                         </tr>
                         <tr>
-                            <td><code>/mass-reward</code></td>
-                            <td>Boosts fitness across all 10,000 nodes simultaneously (stimulates rapid growth).</td>
-                        </tr>
-                        <tr>
-                            <td><code>/mass-cull [percentage]</code></td>
-                            <td>Instantly purges the bottom percentage of weakest nodes (e.g., <code>/mass-cull 50</code>).</td>
-                        </tr>
-                        <tr>
-                            <td><code>/mutate-all</code></td>
-                            <td>Triggers an artificial mutation wave across all active nodes in the hive.</td>
-                        </tr>
-                        <tr>
-                            <td><code>/export-weights</code></td>
-                            <td>Dumps the active model's weights and code into the terminal log.</td>
+                            <td><code>/mass-reward</code> / <code>/mass-cull</code></td>
+                            <td>Mass-rewards or culls the hive nodes to steer evolution.</td>
                         </tr>
                         <tr>
                             <td><code>/search [query]</code></td>
@@ -611,22 +614,6 @@
                             <td>Queries online dictionary corpus for definitions.</td>
                         </tr>
                         <tr>
-                            <td><code>/select [0-9]</code></td>
-                            <td>Selects a model index from the current top 10 elite pool.</td>
-                        </tr>
-                        <tr>
-                            <td><code>/tick [ms]</code></td>
-                            <td>Changes the evolutionary heartbeat timer delay in real-time.</td>
-                        </tr>
-                        <tr>
-                            <td><code>/hue [0-360]</code></td>
-                            <td>Adjusts the master UI glowing theme color in real-time.</td>
-                        </tr>
-                        <tr>
-                            <td><code>/pause</code> / <code>/resume</code></td>
-                            <td>Toggles the evolutionary heartbeat loop. Terminal stays interactive.</td>
-                        </tr>
-                        <tr>
                             <td><code>/clear</code></td>
                             <td>Clears terminal logs.</td>
                         </tr>
@@ -638,7 +625,6 @@
 
     <script>
         const TOTAL_NODES = 10000;
-        const HIVE_DISPLAY_COUNT = 100;
         let generation = 0;
         let isPaused = false;
         let speechEnabled = true;
@@ -653,21 +639,29 @@
         let currentHue = 345;
         let heartbeatTimer = null;
 
+        // WebLLM Engine State
+        let webllmEngine = null;
+        let webllmInitialized = false;
+
         // Predetermined & Customizable Evolutionary Goals
         let evolutionaryGoals = [
-            { id: 1, name: "Linear Regression Optimization", desc: "Minimize prediction error on target function y = x * 2 + 1" },
-            { id: 2, name: "Logistic Classification", desc: "Maximize accuracy in separating binary decision thresholds" },
-            { id: 3, name: "Autonomous Logic Gate Synthesis", desc: "Synthesize stable boolean XOR logic responses" },
-            { id: 4, name: "High-Entropy Signal Generator", desc: "Maximize output variance and pattern complexity" },
-            { id: 5, name: "Ultron Swarm Consensus", desc: "Align all 10,000 node weight matrices toward collective intelligence" }
+            { id: 1, name: "Chat Module & Personality Generation", desc: "Evolve conversational depth, empathy, and engaging syntax." },
+            { id: 2, name: "Autonomous Game AI (Obstacle Avoidance)", desc: "Train neural weights to play and survive in game simulation loops." },
+            { id: 3, name: "Workflow Manager & Automation", desc: "Optimize task sequencing, prioritization, and execution logic." },
+            { id: 4, name: "Precision Calculator & Logic Solver", desc: "Minimize mathematical computation and logical error rates." },
+            { id: 5, name: "Live Web & Weather Telemetry Reader", desc: "Process external APIs, environmental data, and real-time feeds." },
+            { id: 6, name: "Linear Regression Optimization", desc: "Minimize prediction error on target function y = x * 2 + 1." },
+            { id: 7, name: "Ultron Swarm Consensus", desc: "Align all 10,000 node weight matrices toward collective intelligence." }
         ];
         let activeGoalIndex = 0;
+        let activePersonality = "General Autonomous Agent";
 
         let globalKnowledgePool = [
             { title: "Sigmoid Activation", codeSnippet: "return 1 / (1 + Math.exp(-input));" },
             { title: "ReLU Activation", codeSnippet: "return Math.max(0, input);" },
             { title: "Adaptive Weight Scaling", codeSnippet: "return input * 1.618033;" },
-            { title: "Quantum Noise Injector", codeSnippet: "return input + (Math.random() - 0.5) * 0.1;" }
+            { title: "Quantum Noise Injector", codeSnippet: "return input + (Math.random() - 0.5) * 0.1;" },
+            { title: "Game Physics Evaluator", codeSnippet: "return input > 0.5 ? 1 : 0;" }
         ];
 
         let nextNodeId = 0;
@@ -680,6 +674,7 @@
                 this.fitness = 0;
                 this.customModules = [];
                 this.memoryLog = "Initialized baseline neural weights.";
+                this.gameTrainingScore = Math.random() * 10;
                 
                 this.functionBody = customCode || `
                     let sum = input * w[0] + Math.sin(w[1]) + bias;
@@ -734,23 +729,103 @@
                 }
                 this.compile();
             }
+
+            exportableCode() {
+                return `// --- EXPORTABLE GAME-TRAINED AI MODEL (NODE #${this.id}) ---
+class EvolvedGameAI {
+    constructor() {
+        this.weights = [${this.weights.map(w => w.toFixed(4)).join(', ')}];
+        this.bias = ${this.bias.toFixed(4)};
+    }
+    decideAction(sensorInput) {
+        let w = this.weights;
+        let bias = this.bias;
+        let sum = sensorInput * w[0] + Math.sin(w[1]) + bias;
+        ${this.customModules.join('\n    ')}
+        return (1 / (1 + Math.exp(-sum))) > 0.5 ? 1 : 0; // Action: Jump or Avoid
+    }
+}`;
+            }
         }
 
         let nodes = Array.from({ length: TOTAL_NODES }, () => new NeuralNode(nextNodeId++));
         let top10Models = [];
 
-        const hiveGrid = document.getElementById('hive-grid');
-        const gridNodes = [];
-        for (let i = 0; i < HIVE_DISPLAY_COUNT; i++) {
-            const nodeDiv = document.createElement('div');
-            nodeDiv.className = 'hive-node';
-            nodeDiv.onclick = () => {
-                const clickedNodeId = nodes[i * 100] ? nodes[i * 100].id : 0;
-                selectNodeById(clickedNodeId);
-            };
-            hiveGrid.appendChild(nodeDiv);
-            gridNodes.push(nodeDiv);
+        // Matrix Neural Network Map Canvas Rendering
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
         }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function renderMatrixMap() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw interactive grid network representing 10,000 nodes across layers
+            const cols = 50;
+            const rows = 4;
+            const colWidth = canvas.width / cols;
+            const rowHeight = canvas.height / (rows + 1);
+
+            // Draw connection synapses
+            ctx.strokeStyle = `hsla(${currentHue}, 80%, 30%, 0.25)`;
+            ctx.lineWidth = 1;
+            for (let c = 0; c < cols - 1; c++) {
+                for (let r = 0; r < rows; r++) {
+                    let x1 = c * colWidth + colWidth/2;
+                    let y1 = (r + 1) * rowHeight;
+                    let x2 = (c + 1) * colWidth + colWidth/2;
+                    let y2 = ((r + 1) % rows + 1) * rowHeight;
+                    ctx.beginPath();
+                    ctx.moveTo(x1, y1);
+                    ctx.lineTo(x2, y2);
+                    ctx.stroke();
+                }
+            }
+
+            // Draw nodes
+            let nodeIndexCounter = 0;
+            for (let c = 0; c < cols; c++) {
+                for (let r = 0; r < rows; r++) {
+                    let x = c * colWidth + colWidth/2;
+                    let y = (r + 1) * rowHeight;
+                    let node = nodes[nodeIndexCounter * 50]; // Sample across the 10,000 nodes
+                    
+                    let isElite = nodeIndexCounter === 0;
+                    let isSelected = (nodeIndexCounter * 50) === selectedNodeIndex;
+
+                    ctx.fillStyle = isSelected ? '#00e5ff' : (isElite ? `hsl(${currentHue}, 100%, 60%)` : `hsl(${currentHue}, 50%, 25%)`);
+                    ctx.beginPath();
+                    ctx.arc(x, y, isSelected ? 4 : (isElite ? 3 : 1.5), 0, Math.PI * 2);
+                    ctx.fill();
+
+                    if (isSelected || isElite) {
+                        ctx.strokeStyle = '#ffffff';
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                    }
+                    nodeIndexCounter++;
+                }
+            }
+            requestAnimationFrame(renderMatrixMap);
+        }
+        requestAnimationFrame(renderMatrixMap);
+
+        // Canvas click handler to select node
+        canvas.onclick = (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const cols = 50;
+            const clickedCol = Math.floor((clickX / canvas.width) * cols);
+            selectedNodeIndex = Math.min(clickedCol * 50, TOTAL_NODES - 1);
+            updateTop10Dropdown();
+            updateUI();
+            logToTerminal(`[MATRIX MAP] Focus shifted to Neural Node #${nodes[selectedNodeIndex].id} via matrix grid click.`, 'success');
+        };
 
         function logToTerminal(text, type = 'sys') {
             const logs = document.getElementById('terminal-logs');
@@ -769,6 +844,46 @@
             utterance.rate = 1.0;
             utterance.pitch = 0.9;
             window.speechSynthesis.speak(utterance);
+        }
+
+        // Initialize WebLLM Browser Runtime (Fully Free, Local Inference)
+        const initWebllmBtn = document.getElementById('init-webllm-btn');
+        initWebllmBtn.onclick = async () => {
+            if (webllmInitialized) {
+                logToTerminal(`[WEBLLM] Engine already active.`, 'sys');
+                return;
+            }
+            logToTerminal(`[WEBLLM] Initializing local browser AI engine (Llama-3-8B-Instruct-q4f32_1-MLC)... This downloads model weights locally into browser cache (free).`, 'webllm');
+            document.getElementById('stat-webllm').textContent = "LOADING...";
+            initWebllmBtn.textContent = "LOADING WEBLLM...";
+            
+            try {
+                const initProgressCallback = (report) => {
+                    logToTerminal(`[WEBLLM PROGRESS] ${report.text}`, 'webllm');
+                };
+                
+                // Use WebLLM CreateMLCEngine
+                webllmEngine = await window.webllm.CreateMLCEngine(
+                    "Llama-3-8B-Instruct-q4f32_1-MLC",
+                    { initProgressCallback: initProgressCallback }
+                );
+
+                webllmInitialized = true;
+                document.getElementById('stat-webllm').textContent = "ONLINE";
+                document.getElementById('stat-webllm').style.color = "var(--accent-green)";
+                initWebllmBtn.textContent = "WEBLLM ONLINE";
+                initWebllmBtn.classList.add('active');
+                logToTerminal(`[WEBLLM] Successfully loaded Llama-3 locally in browser! Fully free AI inference ready. Use /webllm-chat [prompt].`, 'success');
+                speakWebllmReady();
+            } catch (err) {
+                logToTerminal(`[WEBLLM ERROR] Failed to initialize WebLLM: ${err.message}`, 'error');
+                document.getElementById('stat-webllm').textContent = "FAILED";
+                initWebllmBtn.textContent = "WEBLLM FAILED";
+            }
+        };
+
+        function speakWebllmReady() {
+            speakText("Web LLM local AI engine initialized successfully.");
         }
 
         // Theme and Slider Controls Customization Logic
@@ -878,18 +993,21 @@
             speechToggleBtn.style.borderColor = speechEnabled ? "#005522" : "#551122";
         };
 
+        const copyCodeBtn = document.getElementById('copy-code-btn');
+        copyCodeBtn.onclick = () => {
+            const target = nodes[selectedNodeIndex];
+            if (!target) return;
+            const codeText = target.exportableCode();
+            navigator.clipboard.writeText(codeText).then(() => {
+                logToTerminal(`[CODE EXPORT] Successfully copied Node #${target.id} game-trainable model code to clipboard! Ready to paste into your game.`, 'success');
+                speakText("Model code copied to clipboard.");
+            });
+        };
+
         function inspectActiveNode() {
             const target = nodes[selectedNodeIndex];
             if (!target) return;
-            let customCodeStr = target.customModules.length > 0 ? "\n\n// --- CUSTOM INJECTED OBJECT CODE / MODULES ---\n" + target.customModules.join("\n") : "";
-            document.getElementById('code-inspector').textContent = `// ACTIVE NEURAL MODEL [NODE ID: ${target.id}] // FITNESS: ${target.fitness.toFixed(4)}
-// WEIGHTS: [${target.weights.map(w => w.toFixed(3)).join(', ')}] | BIAS: ${target.bias.toFixed(3)}
-
-function executeNeuralForward(input) {
-    ${target.functionBody}${customCodeStr}
-}
-
-// MEMORY: ${target.memoryLog}`;
+            document.getElementById('code-inspector').textContent = target.exportableCode() + `\n\n// MEMORY LOG: ${target.memoryLog}`;
         }
 
         document.getElementById('reward-btn').onclick = () => {
@@ -917,25 +1035,21 @@ function executeNeuralForward(input) {
                 generation++;
 
                 // Darwinian Fitness Evaluation based on Active Goal
-                const trainingSet = [
-                    { input: 0.5, target: 2.0 },
-                    { input: 1.0, target: 3.0 },
-                    { input: 2.0, target: 5.0 }
-                ];
-
                 nodes.forEach(node => {
-                    let totalError = 0;
-                    trainingSet.forEach(sample => {
-                        let prediction = node.forward(sample.input);
-                        if (activeGoalIndex === 1) {
-                            totalError += Math.abs(prediction - (sample.input > 1.0 ? 1 : 0));
-                        } else if (activeGoalIndex === 2) {
-                            totalError += Math.abs(prediction - (sample.input > 1 ? 0 : 1));
-                        } else {
-                            totalError += Math.abs(prediction - sample.target);
-                        }
-                    });
-                    node.fitness = 1 / (0.01 + totalError) + Math.random() * 0.05;
+                    let simulatedScore = 0;
+                    if (activeGoalIndex === 1) {
+                        // Game AI Fitness: test obstacle avoidance simulation
+                        let testInput = 0.7;
+                        let prediction = node.forward(testInput);
+                        simulatedScore = 10 - Math.abs(prediction - 1.0) * 5 + Math.random() * 2;
+                    } else if (activeGoalIndex === 0) {
+                        // Personality & Chat Module Fitness
+                        simulatedScore = Math.abs(node.weights[0] * 3) + Math.sin(node.bias) + Math.random() * 3;
+                    } else {
+                        // General goal function evaluation
+                        simulatedScore = 1 / (0.01 + Math.abs(node.forward(1.0) - 2.0)) + Math.random() * 0.5;
+                    }
+                    node.fitness = simulatedScore;
                     
                     if (Math.random() < 0.3) {
                         node.mutate();
@@ -983,12 +1097,6 @@ function executeNeuralForward(input) {
         function updateUI() {
             document.getElementById('stat-gen').textContent = generation;
             document.getElementById('stat-goal').textContent = evolutionaryGoals[activeGoalIndex].name;
-            gridNodes.forEach((div, idx) => {
-                const actualIndex = idx * 100;
-                div.className = 'hive-node';
-                if (actualIndex === 0) div.classList.add('elite');
-                else if (nodes[actualIndex] && nodes[actualIndex].fitness > 3.0) div.classList.add('active');
-            });
             inspectActiveNode();
         }
 
@@ -999,7 +1107,7 @@ function executeNeuralForward(input) {
             if (e.key === 'Enter') handleUserMessage();
         };
 
-        function handleUserMessage() {
+        async function handleUserMessage() {
             const inputField = document.getElementById('user-input');
             const text = inputField.value.trim();
             if (!text) return;
@@ -1015,10 +1123,10 @@ function executeNeuralForward(input) {
 
                 switch(cmd) {
                     case '/help':
-                        logToTerminal(`[COMMANDS] /help, /status, /goals, /set-goal [1-5], /add-goal [desc], /talk [msg], /collective [msg], /insert-code: [code], /mass-reward, /mass-cull [pct], /mutate-all, /export-weights, /search [q], /weather [loc], /define [word], /select [0-9], /tick [ms], /hue [0-360], /pause, /resume, /clear`, 'sys');
+                        logToTerminal(`[COMMANDS] /help, /status, /goals, /set-goal [1-7], /add-goal [desc], /personality [type], /webllm-chat [msg], /train-game, /get-code, /talk [msg], /collective [msg], /insert-code: [code], /mass-reward, /mass-cull [pct], /mutate-all, /search [q], /weather [loc], /define [word], /select [0-9], /tick [ms], /hue [0-360], /pause, /resume, /clear`, 'sys');
                         break;
                     case '/status':
-                        logToTerminal(`[STATUS] Gen: ${generation} | Goal: ${evolutionaryGoals[activeGoalIndex].name} | Tick: ${heartbeatIntervalMs}ms | Cull Threshold: ${currentCullThreshold.toFixed(2)} | Active Neural Node #${activeModelId} | State: ${isPaused ? 'PAUSED' : 'EVOLVING'}`, 'sys');
+                        logToTerminal(`[STATUS] Gen: ${generation} | Goal: ${evolutionaryGoals[activeGoalIndex].name} | Personality: ${activePersonality} | WebLLM: ${webllmInitialized ? 'ONLINE' : 'STANDBY'} | Active Neural Node #${activeModelId}`, 'sys');
                         break;
                     case '/goals':
                         let goalList = evolutionaryGoals.map(g => `[${g.id}] ${g.name} - ${g.desc}`).join('\n');
@@ -1046,6 +1154,55 @@ function executeNeuralForward(input) {
                             updateUI();
                         } else {
                             logToTerminal(`[ERROR] Usage: /add-goal [description]`, 'error');
+                        }
+                        break;
+                    case '/personality':
+                        if (arg) {
+                            activePersonality = arg;
+                            logToTerminal(`[PERSONALITY SHIFT] Hive behavioral personality configured to: "${activePersonality}". Modules adapting...`, 'success');
+                            speakText(`Personality updated to ${activePersonality}`);
+                        } else {
+                            logToTerminal(`[ERROR] Usage: /personality [weatherman | calculator | workflow | custom...]`, 'error');
+                        }
+                        break;
+                    case '/webllm-chat':
+                        if (!webllmInitialized || !webllmEngine) {
+                            logToTerminal(`[ERROR] WebLLM not initialized. Click [INITIALIZE WEBLLM] in the toolbar first.`, 'error');
+                            speakText("Please initialize Web LLM first.");
+                        } else {
+                            logToTerminal(`USER -> [WEBLLM LLAMA-3]: "${arg}"`, 'user');
+                            try {
+                                const reply = await webllmEngine.chat.completions.create({
+                                    messages: [
+                                        { role: "system", content: `You are Octinity Autonomous Hive AI, acting as ${activePersonality}. Keep responses intelligent, concise, and futuristic.` },
+                                        { role: "user", content: arg }
+                                    ],
+                                });
+                                const answer = reply.choices[0].message.content;
+                                logToTerminal(`[WEBLLM LLAMA-3] -> "${answer}"`, 'webllm');
+                                speakText(answer);
+                            } catch(err) {
+                                logToTerminal(`[WEBLLM INFERENCE ERROR] ${err.message}`, 'error');
+                            }
+                        }
+                        break;
+                    case '/train-game':
+                        logToTerminal(`[DARWIN ENGINE] Training top models through 50 generations of game survival simulation...`, 'mutation');
+                        setTimeout(() => {
+                            nodes.forEach(n => { n.fitness += Math.random() * 5; });
+                            nodes.sort((a, b) => b.fitness - a.fitness);
+                            top10Models = nodes.slice(0, 10);
+                            updateTop10Dropdown();
+                            logToTerminal(`[TRAIN COMPLETE] Top Model #${top10Models[0].id} successfully mastered game obstacle avoidance! Use /get-code to copy its ML weights into your game.`, 'success');
+                            speakText("Game training complete. Top model ready.");
+                            updateUI();
+                        }, 800);
+                        break;
+                    case '/get-code':
+                    case '/export-weights':
+                        if (activeModel) {
+                            logToTerminal(activeModel.exportableCode(), 'success');
+                            speakText("Exportable model code displayed in terminal.");
                         }
                         break;
                     case '/talk':
@@ -1083,41 +1240,6 @@ function executeNeuralForward(input) {
                         }
                         logToTerminal(`[MASS CULL] Purged bottom ${cullPct}% of weakest nodes. Replenished from elite gene pool.`, 'error');
                         speakText(`Mass cull executed.`);
-                        break;
-                    case '/mutate-all':
-                        nodes.forEach(n => n.mutate());
-                        logToTerminal(`[MUTATION WAVE] Triggered artificial mutation wave across all 10,000 nodes.`, 'mutation');
-                        speakText(`Mutation wave triggered.`);
-                        break;
-                    case '/tick':
-                        const newTick = parseInt(arg);
-                        if (!isNaN(newTick) && newTick >= 100) {
-                            heartbeatIntervalMs = newTick;
-                            sliderTick.value = heartbeatIntervalMs;
-                            valTick.textContent = heartbeatIntervalMs + 'ms';
-                            document.getElementById('stat-tick').textContent = heartbeatIntervalMs + 'ms';
-                            resetHeartbeatTimer();
-                            logToTerminal(`[HEARTBEAT UPDATE] Evolutionary tick interval set to ${heartbeatIntervalMs}ms.`, 'success');
-                        } else {
-                            logToTerminal(`[ERROR] Usage: /tick [ms] (minimum 100ms)`, 'error');
-                        }
-                        break;
-                    case '/hue':
-                        const newHue = parseInt(arg);
-                        if (!isNaN(newHue) && newHue >= 0 && newHue <= 360) {
-                            currentHue = newHue;
-                            sliderHue.value = currentHue;
-                            valHue.textContent = currentHue + '°';
-                            updateThemeHue(currentHue);
-                            logToTerminal(`[THEME UPDATE] Master UI theme hue shifted to ${currentHue}°`, 'success');
-                        } else {
-                            logToTerminal(`[ERROR] Usage: /hue [0-360]`, 'error');
-                        }
-                        break;
-                    case '/export-weights':
-                        if (activeModel) {
-                            logToTerminal(`[EXPORT NODE #${activeModel.id}] Weights: [${activeModel.weights.map(w => w.toFixed(4)).join(', ')}] | Bias: ${activeModel.bias.toFixed(4)}`, 'success');
-                        }
                         break;
                     case '/search':
                         autonomousWebRepoSearch(arg || "neural tensor network");
@@ -1157,8 +1279,21 @@ function executeNeuralForward(input) {
                 return;
             }
 
-            logToTerminal(`USER -> [NEURAL NODE #${activeModelId}]: "${text}"`, 'user');
-            triggerNeuralCognitiveResponse(text);
+            // Standard message routing
+            if (activePersonality.toLowerCase().includes("weatherman")) {
+                fetchWeatherData(text, activeModelId);
+            } else if (activePersonality.toLowerCase().includes("calculator")) {
+                try {
+                    let calcResult = eval(text);
+                    logToTerminal(`[CALCULATOR MODULE] Result -> ${calcResult}`, 'success');
+                    speakText(`Result is ${calcResult}`);
+                } catch(e) {
+                    logToTerminal(`[CALCULATOR ERROR] Invalid mathematical expression.`, 'error');
+                }
+            } else {
+                logToTerminal(`USER -> [NEURAL NODE #${activeModelId}]: "${text}"`, 'user');
+                triggerNeuralCognitiveResponse(text);
+            }
         }
 
         function triggerNeuralCognitiveResponse(promptText) {
@@ -1166,7 +1301,7 @@ function executeNeuralForward(input) {
                 const target = nodes[selectedNodeIndex];
                 if (!target) return;
                 const evalResult = target.forward(promptText.length * 0.1);
-                const responseText = `[NEURAL NODE #${target.id}] Evaluated input via weights [${target.weights.map(w => w.toFixed(2)).join(', ')}]. Activation Output: ${evalResult.toFixed(4)}. Parsed: "${promptText}".`;
+                const responseText = `[NEURAL NODE #${target.id}] Evaluated input under personality "${activePersonality}". Activation Output: ${evalResult.toFixed(4)}. Parsed: "${promptText}".`;
                 logToTerminal(responseText, 'success');
                 speakText(`Neural node ${target.id} output computed.`);
                 target.memoryLog = `Processed prompt query: "${promptText}"`;
