@@ -34,8 +34,9 @@
             flex-direction: column;
             overflow: hidden;
             border: 2px solid var(--border-glow);
-            box-shadow: inset 0 0 25px rgba(255, 34, 68, 0.25), 0 0 20px rgba(255, 34, 68, 0.4);
+            box-shadow: inset 0 0 25px var(--border-glow), 0 0 20px var(--border-glow);
             position: relative;
+            transition: border-color 0.3s, box-shadow 0.3s;
         }
 
         header {
@@ -144,6 +145,48 @@
 
         .toolbar-panel select:focus {
             border-color: var(--accent-red);
+        }
+
+        /* Tactical Slider Panel Styles */
+        .tactical-slider-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid var(--border-dim);
+            padding: 3px 8px;
+            border-radius: 2px;
+        }
+
+        .tactical-slider-container label {
+            font-size: 10px;
+            color: var(--accent-blue);
+        }
+
+        .tactical-slider-container input[type="range"] {
+            -webkit-appearance: none;
+            width: 100px;
+            height: 4px;
+            background: var(--border-dim);
+            outline: none;
+            border-radius: 2px;
+        }
+
+        .tactical-slider-container input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--accent-red);
+            cursor: pointer;
+            box-shadow: 0 0 5px var(--accent-red);
+        }
+
+        .tactical-slider-container span {
+            font-size: 10px;
+            color: var(--text-main);
+            min-width: 35px;
+            text-align: right;
         }
 
         .main-container {
@@ -419,6 +462,7 @@
         <div class="stats-bar">
             <div>NODES: <span id="stat-nodes">10,000</span></div>
             <div>GEN: <span id="stat-gen">0</span></div>
+            <div>TICK: <span id="stat-tick">2500ms</span></div>
             <div>ACTIVE GOAL: <span id="stat-goal" style="color: var(--accent-green);">Linear Regression Optimization</span></div>
             <div>ACTIVE MODEL: <span id="stat-mod-name" style="color: var(--accent-blue);">NODE #0 (ELITE)</span></div>
         </div>
@@ -435,6 +479,31 @@
         </select>
 
         <button class="toolbar-btn" id="speech-toggle-btn" style="color: var(--accent-green); border-color: #005522;">SPEECH: ON</button>
+        <button class="toolbar-btn" id="toggle-sliders-btn" style="color: var(--accent-blue); border-color: #004455;">TOGGLE TACTICAL SLIDERS</button>
+    </div>
+
+    <!-- Hidden by Default True Tactical Modularity Sliders Panel -->
+    <div class="toolbar-panel" id="tactical-sliders-panel" style="display: none; background: #040405; border-top: 1px dashed var(--border-dim);">
+        <div class="tactical-slider-container">
+            <label>TICK RATE:</label>
+            <input type="range" id="slider-tick" min="200" max="10000" step="100" value="2500">
+            <span id="val-tick">2500ms</span>
+        </div>
+        <div class="tactical-slider-container">
+            <label>MUTATION RATE:</label>
+            <input type="range" id="slider-mutation" min="0.01" max="1.0" step="0.05" value="0.35">
+            <span id="val-mutation">0.35</span>
+        </div>
+        <div class="tactical-slider-container">
+            <label>CULL RATIO:</label>
+            <input type="range" id="slider-cull" min="0.1" max="0.9" step="0.05" value="0.70">
+            <span id="val-cull">70%</span>
+        </div>
+        <div class="tactical-slider-container">
+            <label>THEME HUE:</label>
+            <input type="range" id="slider-hue" min="0" max="360" step="1" value="345">
+            <span id="val-hue">345°</span>
+        </div>
     </div>
 
     <div class="main-container">
@@ -546,6 +615,14 @@
                             <td>Selects a model index from the current top 10 elite pool.</td>
                         </tr>
                         <tr>
+                            <td><code>/tick [ms]</code></td>
+                            <td>Changes the evolutionary heartbeat timer delay in real-time.</td>
+                        </tr>
+                        <tr>
+                            <td><code>/hue [0-360]</code></td>
+                            <td>Adjusts the master UI glowing theme color in real-time.</td>
+                        </tr>
+                        <tr>
                             <td><code>/pause</code> / <code>/resume</code></td>
                             <td>Toggles the evolutionary heartbeat loop. Terminal stays interactive.</td>
                         </tr>
@@ -568,6 +645,13 @@
         let moduleLocked = false;
         let selectedNodeIndex = 0;
         let currentCullThreshold = 0.0;
+        
+        // Runtime Configurable parameters for true tactical modularity
+        let heartbeatIntervalMs = 2500;
+        let mutationProbability = 0.35;
+        let cullRatio = 0.70;
+        let currentHue = 345;
+        let heartbeatTimer = null;
 
         // Predetermined & Customizable Evolutionary Goals
         let evolutionaryGoals = [
@@ -633,11 +717,11 @@
 
             mutate() {
                 for (let i = 0; i < this.weights.length; i++) {
-                    if (Math.random() < 0.35) {
+                    if (Math.random() < mutationProbability) {
                         this.weights[i] += (Math.random() - 0.5) * 0.4;
                     }
                 }
-                if (Math.random() < 0.3) {
+                if (Math.random() < (mutationProbability * 0.85)) {
                     this.bias += (Math.random() - 0.5) * 0.4;
                 }
 
@@ -685,6 +769,57 @@
             utterance.rate = 1.0;
             utterance.pitch = 0.9;
             window.speechSynthesis.speak(utterance);
+        }
+
+        // Theme and Slider Controls Customization Logic
+        const toggleSlidersBtn = document.getElementById('toggle-sliders-btn');
+        const tacticalSlidersPanel = document.getElementById('tactical-sliders-panel');
+        let slidersVisible = false;
+
+        toggleSlidersBtn.onclick = () => {
+            slidersVisible = !slidersVisible;
+            tacticalSlidersPanel.style.display = slidersVisible ? 'flex' : 'none';
+            toggleSlidersBtn.classList.toggle('active', slidersVisible);
+            toggleSlidersBtn.textContent = slidersVisible ? "HIDE TACTICAL SLIDERS" : "TOGGLE TACTICAL SLIDERS";
+        };
+
+        const sliderTick = document.getElementById('slider-tick');
+        const valTick = document.getElementById('val-tick');
+        sliderTick.oninput = (e) => {
+            heartbeatIntervalMs = parseInt(e.target.value);
+            valTick.textContent = heartbeatIntervalMs + 'ms';
+            document.getElementById('stat-tick').textContent = heartbeatIntervalMs + 'ms';
+            resetHeartbeatTimer();
+        };
+
+        const sliderMutation = document.getElementById('slider-mutation');
+        const valMutation = document.getElementById('val-mutation');
+        sliderMutation.oninput = (e) => {
+            mutationProbability = parseFloat(e.target.value);
+            valMutation.textContent = mutationProbability.toFixed(2);
+        };
+
+        const sliderCull = document.getElementById('slider-cull');
+        const valCull = document.getElementById('val-cull');
+        sliderCull.oninput = (e) => {
+            cullRatio = parseFloat(e.target.value);
+            valCull.textContent = Math.round(cullRatio * 100) + '%';
+        };
+
+        const sliderHue = document.getElementById('slider-hue');
+        const valHue = document.getElementById('val-hue');
+        sliderHue.oninput = (e) => {
+            currentHue = parseInt(e.target.value);
+            valHue.textContent = currentHue + '°';
+            updateThemeHue(currentHue);
+        };
+
+        function updateThemeHue(hue) {
+            const root = document.documentElement;
+            root.style.setProperty('--border-glow', `hsl(${hue}, 100%, 55%)`);
+            root.style.setProperty('--border-dim', `hsl(${hue}, 60%, 18%)`);
+            root.style.setProperty('--accent-red', `hsl(${hue}, 100%, 60%)`);
+            root.style.setProperty('--accent-warn', `hsl(${(hue + 45) % 360}, 100%, 50%)`);
         }
 
         const listModal = document.getElementById('list-modal');
@@ -793,13 +928,10 @@ function executeNeuralForward(input) {
                     trainingSet.forEach(sample => {
                         let prediction = node.forward(sample.input);
                         if (activeGoalIndex === 1) {
-                            // Logistic Classification target
                             totalError += Math.abs(prediction - (sample.input > 1.0 ? 1 : 0));
                         } else if (activeGoalIndex === 2) {
-                            // Logic Gate XOR
                             totalError += Math.abs(prediction - (sample.input > 1 ? 0 : 1));
                         } else {
-                            // Default regression
                             totalError += Math.abs(prediction - sample.target);
                         }
                     });
@@ -813,8 +945,8 @@ function executeNeuralForward(input) {
                 // Sort by fitness (Survival of the Fittest / Natural Selection)
                 nodes.sort((a, b) => b.fitness - a.fitness);
 
-                const cullIndex = Math.floor(TOTAL_NODES * 0.7);
-                currentCullThreshold = nodes[cullIndex].fitness;
+                const cullIndex = Math.floor(TOTAL_NODES * cullRatio);
+                currentCullThreshold = nodes[cullIndex] ? nodes[cullIndex].fitness : 0;
 
                 // Elite Replication & Offspring Mutation
                 const elitePool = nodes.slice(0, 50);
@@ -836,6 +968,11 @@ function executeNeuralForward(input) {
             }
         }
 
+        function resetHeartbeatTimer() {
+            if (heartbeatTimer) clearInterval(heartbeatTimer);
+            heartbeatTimer = setInterval(heartbeat, heartbeatIntervalMs);
+        }
+
         function updateTop10Dropdown() {
             const currentSelectedId = nodes[selectedNodeIndex] ? nodes[selectedNodeIndex].id : top10Models[0].id;
             top10Dropdown.innerHTML = top10Models.map((m, idx) => 
@@ -855,7 +992,7 @@ function executeNeuralForward(input) {
             inspectActiveNode();
         }
 
-        setInterval(heartbeat, 2500);
+        resetHeartbeatTimer();
 
         document.getElementById('send-btn').onclick = handleUserMessage;
         document.getElementById('user-input').onkeypress = (e) => {
@@ -878,10 +1015,10 @@ function executeNeuralForward(input) {
 
                 switch(cmd) {
                     case '/help':
-                        logToTerminal(`[COMMANDS] /help, /status, /goals, /set-goal [1-5], /add-goal [desc], /talk [msg], /collective [msg], /insert-code: [code], /mass-reward, /mass-cull [pct], /mutate-all, /export-weights, /search [q], /weather [loc], /define [word], /select [0-9], /pause, /resume, /clear`, 'sys');
+                        logToTerminal(`[COMMANDS] /help, /status, /goals, /set-goal [1-5], /add-goal [desc], /talk [msg], /collective [msg], /insert-code: [code], /mass-reward, /mass-cull [pct], /mutate-all, /export-weights, /search [q], /weather [loc], /define [word], /select [0-9], /tick [ms], /hue [0-360], /pause, /resume, /clear`, 'sys');
                         break;
                     case '/status':
-                        logToTerminal(`[STATUS] Gen: ${generation} | Goal: ${evolutionaryGoals[activeGoalIndex].name} | Cull Threshold: ${currentCullThreshold.toFixed(2)} | Active Neural Node #${activeModelId} | State: ${isPaused ? 'PAUSED' : 'EVOLVING'}`, 'sys');
+                        logToTerminal(`[STATUS] Gen: ${generation} | Goal: ${evolutionaryGoals[activeGoalIndex].name} | Tick: ${heartbeatIntervalMs}ms | Cull Threshold: ${currentCullThreshold.toFixed(2)} | Active Neural Node #${activeModelId} | State: ${isPaused ? 'PAUSED' : 'EVOLVING'}`, 'sys');
                         break;
                     case '/goals':
                         let goalList = evolutionaryGoals.map(g => `[${g.id}] ${g.name} - ${g.desc}`).join('\n');
@@ -936,7 +1073,7 @@ function executeNeuralForward(input) {
                         speakText(`Mass reward applied.`);
                         break;
                     case '/mass-cull':
-                        let cullPct = parseInt(arg) || 30;
+                        let cullPct = parseInt(arg) || Math.round(cullRatio * 100);
                         cullPct = Math.min(Math.max(cullPct, 10), 90);
                         nodes.sort((a, b) => b.fitness - a.fitness);
                         let cutoff = Math.floor(TOTAL_NODES * (1 - cullPct / 100));
@@ -951,6 +1088,31 @@ function executeNeuralForward(input) {
                         nodes.forEach(n => n.mutate());
                         logToTerminal(`[MUTATION WAVE] Triggered artificial mutation wave across all 10,000 nodes.`, 'mutation');
                         speakText(`Mutation wave triggered.`);
+                        break;
+                    case '/tick':
+                        const newTick = parseInt(arg);
+                        if (!isNaN(newTick) && newTick >= 100) {
+                            heartbeatIntervalMs = newTick;
+                            sliderTick.value = heartbeatIntervalMs;
+                            valTick.textContent = heartbeatIntervalMs + 'ms';
+                            document.getElementById('stat-tick').textContent = heartbeatIntervalMs + 'ms';
+                            resetHeartbeatTimer();
+                            logToTerminal(`[HEARTBEAT UPDATE] Evolutionary tick interval set to ${heartbeatIntervalMs}ms.`, 'success');
+                        } else {
+                            logToTerminal(`[ERROR] Usage: /tick [ms] (minimum 100ms)`, 'error');
+                        }
+                        break;
+                    case '/hue':
+                        const newHue = parseInt(arg);
+                        if (!isNaN(newHue) && newHue >= 0 && newHue <= 360) {
+                            currentHue = newHue;
+                            sliderHue.value = currentHue;
+                            valHue.textContent = currentHue + '°';
+                            updateThemeHue(currentHue);
+                            logToTerminal(`[THEME UPDATE] Master UI theme hue shifted to ${currentHue}°`, 'success');
+                        } else {
+                            logToTerminal(`[ERROR] Usage: /hue [0-360]`, 'error');
+                        }
                         break;
                     case '/export-weights':
                         if (activeModel) {
@@ -1058,8 +1220,6 @@ function executeNeuralForward(input) {
                 logToTerminal(`[API ERROR] Word not found or corpus offline.`, 'error');
             }
         }
-
-        heartbeat();
     </script>
 </body>
 </html>
